@@ -1,0 +1,19 @@
+==============================================================================
+ HFST-optimized-lookup: morphological analysis using a fast lookup transducer
+==============================================================================
+
+This package contains a lookup implementation for a new transducer
+format optimized for speed. There's a lot of documentation and other
+information at
+
+	https://kitwiki.csc.fi/twiki/bin/view/KitWiki/HfstHome
+
+Do not build this directly. Instead, build FinnPos.
+
+hfst-optimized-lookup is created and distributed by the HFST project
+(hfst.sf.net).  It is distributed freely under the Apache 2.0 license
+which should be found in the parent directory FinnPos/src, or can be
+found at
+
+	http://www.apache.org/licenses/LICENSE-2.0.txt
+
