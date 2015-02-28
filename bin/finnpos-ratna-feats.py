@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 """@package ratna_feats
 
  file    finnpos-ratna-feats.py                                                     
@@ -45,67 +47,87 @@ def main(iname, ifile, oname, ofile, olog, freq_words):
 
     olog.write(('Reading from %s. Writing to %s.' + linesep) % (iname, oname))
 
-    sentences = [[]]
+    i = 0
 
-    # Split file into sentences and check syntax.
-    for i, line in enumerate(map(lambda x: x.strip(), ifile)):
-        if len(line) == 0:
-            sentences.append([])
+    while ifile:
+        sentence = []
+
+        # Split file into sentences and check syntax.
+        for line in ifile:            
+            line = line.strip()
+
+            if len(line) == 0:
+                break
+
+            else:
+                fields = line.split('\t')
+
+                if len(fields) != 3 and len(fields) != 5:
+                    print(fields)
+                    olog.write(("Line %u in file %s: Incorrect field count %u. " +
+                                "Should be 3 or 5." + linesep) 
+                               % 
+                               (i + 1, iname, len(fields)))
+
+                    return EXIT_FAIL
+
+            sentence.append(fields)
+
+            i += 1
         else:
-            fields = line.split('\t')
+            i += 1
+            return
 
-            if len(fields) != 3 and len(fields) != 4:
-                olog.write(("Line %u in file %s: Incorrect field count %u. " +
-                           "Should be 3 or 4." + linesep) 
-                           % 
-                           (i + 1, iname, len(fields)))
+        if sentence == []:
+            continue
 
-                return EXIT_FAIL
-
-            sentences[-1].append(fields)
-
-    # Extract features for each sentence and write output to ofile.
-    for sentence in filter(None, sentences):
+        # Extract features for each sentence and write output to ofile.
         for i, line in enumerate(sentence):
-            wf = ""
+            wf    = ""
             lemma = ""
             label = ""
-            ann = ""
-
+            ann   = ""
+            
             if len(line) == 3:
                 wf, lemma, label = line
                 ann = "_"
             else:
-                wf, lemma, label, ann = line
-
+                wf, _feats, lemma, label, ann = line
+                
             features = []
+        
+            if not ann in ['_', '']:
+                label_feats = [ "FEAT:" + label for label in 
+                                map(lambda x: x[0], eval(ann)) ]
+
+                features += label_feats
 
             features.append('PPWORD=' + get_wf(i - 2, sentence))
             features.append('PWORD='  + get_wf(i - 1, sentence))
             features.append('WORD='   + wf)
             features.append('NWORD='  + get_wf(i + 1, sentence))
             features.append('NNWORD=' + get_wf(i + 2, sentence))
-
+            
             features.append('PWORDPAIR='  + get_wf(i - 1, sentence) + "_" + wf)
             features.append('NWORDPAIR='  + wf + "_" + get_wf(i + 1, sentence))
             
             features.append("LC_WORD=" + wf.lower())
-
+            
             if not wf in freq_words:
                 features += get_suffixes(wf)
                 features += get_prefixes(wf)
-
+                
                 features.append(has_uc(wf))
                 features.append(has_digit(wf))
                 features.append(has_dash(wf))
-
-            feat_str = " ".join(filter(None, features))
-
             
+            feat_str = " ".join(filter(None, features))
+        
+        
             ofile.write(("%s\t%s\t%s\t%s\t%s" + linesep) 
                         % 
                         (wf, feat_str, lemma, label, ann))
-
+        
         ofile.write(linesep)
 
     return EXIT_SUCCESS

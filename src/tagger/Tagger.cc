@@ -87,7 +87,8 @@ void Tagger::train(std::istream &train_in,
 		   std::istream &dev_in)
 {
   msg_out << "Reading training data." << std::endl;
-  Data train_data(train_in, 1, label_extractor, param_table, tagger_options.degree);
+  Data train_data(train_in, 1, label_extractor, param_table, 
+		  tagger_options.degree);
   train_data.clear_label_guesses(); 
   train_data.randomize();
   
@@ -101,46 +102,8 @@ void Tagger::train(std::istream &train_in,
 
   msg_out << "Setting label guesses." << std::endl;
   train_data.set_label_guesses(label_extractor, 0, tagger_options.guess_mass);
-  dev_data.set_label_guesses(label_extractor, 1, 0.9999 /* tagger_options.guess_mass*/);
-
-  float guess_count = 0;
-  float word_count  = 0;
-  float recall      = 0;
-  for (unsigned int i = 0; i < train_data.size(); ++i)
-    {
-      for (unsigned int j = 0; j < train_data.at(i).size(); ++j)
-	{
-	  guess_count += train_data.at(i).at(j).get_label_count();
-	  recall += train_data.at(i).at(j).get_recall();
-	  word_count += 1;
-	}
-    }
-
-  std::cerr << guess_count / word_count 
-	    << " guesses/token in the training data" << std::endl;
-
-  std::cerr << recall / word_count 
-	    << "% recall." << std::endl;
-
-  guess_count = 0;
-  word_count = 0;
-  recall      = 0;
-
-  for (unsigned int i = 0; i < dev_data.size(); ++i)
-    {
-      for (unsigned int j = 0; j < dev_data.at(i).size(); ++j)
-	{
-	  guess_count += dev_data.at(i).at(j).get_label_count();
-	  recall += dev_data.at(i).at(j).get_recall();
-	  word_count += 1;
-	}
-    }
-
-  std::cerr << guess_count / word_count 
-	    << " guesses/token in the development data" << std::endl;
-
-  std::cerr << recall / word_count 
-	    << "% recall." << std::endl;
+  dev_data.set_label_guesses(label_extractor, 1, 
+			     0.9999 /* tagger_options.guess_mass*/);
 
   msg_out << "Estimating lemmatizer parameters." << std::endl;
   lemma_extractor.set_max_passes(tagger_options.max_lemmatizer_passes);
@@ -156,7 +119,8 @@ void Tagger::train(std::istream &train_in,
 				lemma_extractor,
 				msg_out);
       
-      trainer.train(train_data, dev_data, tagger_options.beam, tagger_options.beam_mass);
+      trainer.train(train_data, dev_data, tagger_options.beam, 		    
+		    tagger_options.beam_mass);
     }
   else
     { throw NotImplemented(); }
@@ -179,7 +143,9 @@ void Tagger::evaluate(std::istream &in)
   
   for (unsigned int i = 0; i < data.size(); ++i)
     {
-      trellises.push_back(Trellis(data_copy.at(i), label_extractor.get_boundary_label(), tagger_options.beam));
+      trellises.push_back(Trellis(data_copy.at(i), 
+				  label_extractor.get_boundary_label(), 
+				  tagger_options.beam));
     }
 
   // Tag test data.
@@ -194,18 +160,19 @@ void Tagger::evaluate(std::istream &in)
   
   msg_out << "  Final test label acc: " << accs.label_acc * 100.00 << "%" 
 	  << std::endl;
-  msg_out << "  Final test OOV label acc: " << accs.oov_label_acc * 100.00 << "%" 
+  msg_out << "  Final test OOV label acc: " << accs.oov_label_acc * 100.00 
+	  << "%" 
 	  << std::endl;
   msg_out << "  Final test lemma acc: " << accs.lemma_acc * 100.00 << "%" 
 	  << std::endl;
-  msg_out << "  Final test OOV lemma acc: " << accs.oov_lemma_acc * 100.00 << "%" 
+  msg_out << "  Final test OOV lemma acc: " << accs.oov_lemma_acc * 100.00 
+	  << "%" 
 	  << std::endl;
 
 }
 
 void Tagger::label(std::istream &in)
 {
-  msg_out << "Evaluating." << std::endl;
   Data data(in, 0, label_extractor, param_table, tagger_options.degree);
   data.set_label_guesses(label_extractor, 1, tagger_options.guess_mass);
 
@@ -213,7 +180,9 @@ void Tagger::label(std::istream &in)
   
   for (unsigned int i = 0; i < data.size(); ++i)
     {
-      trellises.push_back(Trellis(data.at(i), label_extractor.get_boundary_label(), tagger_options.beam));
+      trellises.push_back(Trellis(data.at(i), 
+				  label_extractor.get_boundary_label(), 
+				  tagger_options.beam));
     }
 
   // Tag test data.
@@ -231,7 +200,11 @@ void Tagger::label(std::istream &in)
 	  if (data.at(i).at(j).get_word_form() == "_#_")
 	    { continue; }
 
-	  std::cout << data.at(i).at(j).get_word_form() << "\t_\t" << data.at(i).at(j).get_lemma() << "\t" << label_extractor.get_label_string(data.at(i).at(j).get_label()) << "\t" << data.at(i).at(j).get_annotations() << std::endl;
+	  std::cout << data.at(i).at(j).get_word_form() 
+		    << "\t_\t" << data.at(i).at(j).get_lemma() 
+		    << "\t" << label_extractor.
+	    get_label_string(data.at(i).at(j).get_label()) 
+		    << "\t" << data.at(i).at(j).get_annotations() << std::endl;
 	}
       std::cout << std::endl;
     }

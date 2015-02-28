@@ -35,10 +35,8 @@
 #include <iostream>
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
-
-#include <config.h>
 
 enum OutputType {HFST, xerox};
 OutputType outputType = xerox;

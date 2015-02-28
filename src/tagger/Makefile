@@ -11,6 +11,12 @@ PROGS=finnpos-train finnpos-label finnpos-eval
 
 all:$(PROGS)
 
+install:all
+	cp $(PROGS) ../../bin
+
+uninstall:
+	rm -f $(PROGS:%=../../bin/%)
+
 clean:
 	rm -f $(OBJS) $(TESTS) $(PROGS)
 
