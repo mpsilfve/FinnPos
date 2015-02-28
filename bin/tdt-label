@@ -1,0 +1,17 @@
+#! /bin/bash
+
+if [ $# -ne 2 ]
+then
+    echo "USE: $0 freq_word_list"
+    exit 1
+fi
+
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MODEL_DIR=$BIN_DIR/../share/finnpos/tagger
+OMOR_DIR=$BIN_DIR/../share/finnpos/omorfi
+
+$BIN_DIR/hfst-optimized-lookup $OMOR_DIR/morphology.omor.hfst     |
+python3 $BIN_DIR/omorfi2finnpos.py tdt                            |
+python3 $BIN_DIR/finnpos-ratna-feats.py $MODEL_DIR/tdt_freq_words |
+$BIN_DIR/finnpos-label $MODEL_DIR/tdt.model                       |
+python $BIN_DIR/restore_lemma.py
