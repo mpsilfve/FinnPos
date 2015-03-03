@@ -27,11 +27,12 @@
 
 int main(int argc, char * argv[])
 {
-  if (argc != 3 or argc != 4)
+  if (argc != 3 and argc != 4)
     {
       std::cerr << "USAGE: " << argv[0] << " sys_tagged_file gold_tagged_file "
 		<< "[ model ]"
 		<< std::endl;
+      exit(1);
     }
 
   bool read_model = 0;

@@ -103,7 +103,7 @@ void Tagger::train(std::istream &train_in,
   msg_out << "Setting label guesses." << std::endl;
   train_data.set_label_guesses(label_extractor, 0, tagger_options.guess_mass);
   dev_data.set_label_guesses(label_extractor, 1, 
-			     0.9999 /* tagger_options.guess_mass*/);
+			     0.9999 /*tagger_options.guess_mass*/);
 
   msg_out << "Estimating lemmatizer parameters." << std::endl;
   lemma_extractor.set_max_passes(tagger_options.max_lemmatizer_passes);

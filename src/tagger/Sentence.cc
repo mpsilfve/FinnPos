@@ -72,7 +72,7 @@ Sentence::Sentence(std::istream &ifile,
 
 	  if (is_gold)
 	    {
-	      if (entry.lemma.empty() or entry.labels.size() != 1)
+	      if (entry.lemma.empty() or /*entry.labels.size() != 1*/ entry.labels.size() == 0)
 		{ 
 		  throw SyntaxError(); 
 		}
