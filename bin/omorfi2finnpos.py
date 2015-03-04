@@ -42,7 +42,8 @@ def convert(ifile, convert_type):
 
         if line == '' and wf != '':
             lemmas = list(set(lemmas))
-            print('%s\t%s\t%s\t%s\t%s' % (wf, '_', '_', labels, str(lemmas)))
+            lemma_str = str(lemmas).replace(' ','')
+            print('%s\t%s\t%s\t%s\t%s' % (wf, '_', '_', labels, lemma_str))
 
             wf, labels, lemmas = '', '', []
             
