@@ -8,6 +8,8 @@ clean:
 	make -C ./data clean
 	make -C ./src uninstall
 	make -C ./data clean
+	rm -f ftb.test.sys ftb.omorfi.test.sys
+	rm -f tdt.test.sys tdt.omorfi.test.sys
 
 finnpos:
 	make -C src
