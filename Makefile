@@ -10,6 +10,10 @@ clean:
 	make -C ./data clean
 	rm -f ftb.test.sys ftb.omorfi.test.sys
 	rm -f tdt.test.sys tdt.omorfi.test.sys
+	rm -f share/ftb_model/ftb.model
+	rm -f share/ftb_omorfi_model/ftb.omorfi.model
+	rm -f share/tdt_model/tdt.model
+	rm -f share/tdt_omorfi_model/tdt.omorfi.model
 
 finnpos:
 	make -C src
@@ -20,13 +24,14 @@ tdt-omorfi-tagger-lre
 
 ftb-tagger:finnpos share/omorfi/morphology.omor.hfst
 	make -C data/ftb
+	mkdir -p share/ftb_model
 	bin/finnpos-train data/ftb/config data/ftb/ftb.train+dev.feats \
         data/ftb/ftb.dev.feats share/ftb_model/ftb.model
 
-ftb-tagger-lre:finnpos share/omorfi/morphology.omor.hfst
+ftb-tagger-lre:finnpos
 	echo FTB WITHOUT OMORFI > $(LOGF)
 	echo >> $(LOGF)
-
+	mkdir -p share/ftb_model
 	make -C data/ftb
 	(time bin/finnpos-train data/ftb/config data/ftb/ftb.train+dev.feats \
         data/ftb/ftb.dev.feats share/ftb_model/ftb.model 2>&1) | \
@@ -40,9 +45,10 @@ ftb-tagger-lre:finnpos share/omorfi/morphology.omor.hfst
 	share/ftb_model/ftb.model &>> $(LOGF)
 	echo >> $(LOGF)
 
-ftb-omorfi-tagger-lre:finnpos share/omorfi/morphology.omor.hfst
+ftb-omorfi-tagger-lre:finnpos
 	echo FTB WITH OMORFI >> $(LOGF)
 	echo >> $(LOGF)
+	mkdir -p share/ftb_omorfi_model
 	make -C data/ftb
 	(time bin/finnpos-train data/ftb/omorfi_config \
         data/ftb/ftb.omorfi.train+dev.feats data/ftb/ftb.omorfi.dev.feats \
@@ -57,9 +63,10 @@ ftb-omorfi-tagger-lre:finnpos share/omorfi/morphology.omor.hfst
 	share/ftb_omorfi_model/ftb.omorfi.model &>> $(LOGF)
 	echo >> $(LOGF)
 
-tdt-tagger-lre:finnpos share/omorfi/morphology.omor.hfst
+tdt-tagger-lre:finnpos
 	echo TDT WITHOUT OMORFI >> $(LOGF)
 	echo >> $(LOGF)
+	mkdir -p share/tdt_model
 	make -C data/tdt
 	(time bin/finnpos-train data/tdt/config data/tdt/tdt.train+dev.feats \
         data/tdt/tdt.dev.feats share/tdt_model/tdt.model) 2>&1 | \
@@ -73,9 +80,10 @@ tdt-tagger-lre:finnpos share/omorfi/morphology.omor.hfst
 	share/tdt_model/tdt.model &>> $(LOGF)
 	echo >> $(LOGF)
 
-tdt-omorfi-tagger-lre:finnpos share/omorfi/morphology.omor.hfst
+tdt-omorfi-tagger-lre:finnpos
 	echo TDT WITH OMORFI >> $(LOGF)
 	echo >> $(LOGF)
+	mkdir -p share/tdt_omorfi_model
 	make -C data/tdt
 	(time bin/finnpos-train data/tdt/omorfi_config\
         data/tdt/tdt.omorfi.train+dev.feats data/tdt/tdt.omorfi.dev.feats \
