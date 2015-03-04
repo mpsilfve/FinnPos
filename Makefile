@@ -10,7 +10,8 @@ clean:
 	make -C ./data clean
 	rm -f ftb.test.sys ftb.omorfi.test.sys
 	rm -f tdt.test.sys tdt.omorfi.test.sys
-	rm -f experiments
+	rm -Rf experiments
+	rm -f lre-experiments.log
 
 finnpos:
 	make -C src
