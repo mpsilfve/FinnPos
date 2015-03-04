@@ -116,7 +116,7 @@ def main(iname, ifile, oname, ofile, olog, freq_words):
             if not wf in freq_words:
                 features += get_suffixes(wf)
                 features += get_prefixes(wf)
-                
+            
                 features.append(has_uc(wf))
                 features.append(has_digit(wf))
                 features.append(has_dash(wf))
