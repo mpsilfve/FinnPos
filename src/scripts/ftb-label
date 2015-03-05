@@ -4,7 +4,7 @@ BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MODEL_DIR=$BIN_DIR/../share/finnpos/ftb_omorfi_model
 OMOR_DIR=$BIN_DIR/../share/finnpos/omorfi
 
-echo "FinnTreeBank tagger using OMorFi and FinnPos" 1>&2
+echo "FinnTreeBank tagger (REVISION) using OMorFi and FinnPos" 1>&2
 echo 1>&2
 
 $BIN_DIR/hfst-optimized-lookup $OMOR_DIR/morphology.omor.hfst |
