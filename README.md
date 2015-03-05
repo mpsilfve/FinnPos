@@ -19,10 +19,12 @@ Finnish. It is based on Conditional random field models and features
   use a standard set of pre-defined features.
 
 In addition to utilities for training your own morphological taggers,
-FinnPos provides a morphological tagger for Finnish which is trained
-using the high quality manually constructed Finnish corpus
-[FinnTreeBank
-1](http://www.ling.helsinki.fi/kieliteknologia/tutkimus/treebank/).
+FinnPos provides a morphological tagger, FinnTreeBank tagger for
+Finnish which is trained using the high quality manually constructed
+Finnish corpus [FinnTreeBank
+1](http://www.ling.helsinki.fi/kieliteknologia/tutkimus/treebank/). FinnTreeBank
+tagger utilizes the open-source Finnish morphological analyzer
+[OMorFi](https://code.google.com/p/omorfi/) to boost tagging accuracy.
 
 The code for FinnPos is licensed under the Apache Software Lincense
 Version 2.0. External resources such as morphological analyzers,
