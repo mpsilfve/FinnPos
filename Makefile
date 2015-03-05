@@ -1,6 +1,8 @@
 SHELL=/bin/bash
 INSTALL_DIR=/usr/local
 LOGF=lre-experiments.log
+REV=$(shell git describe --tags)
+
 
 all:finnpos
 
@@ -26,9 +28,8 @@ ftb-omorfi-tagger:finnpos share/finnpos/omorfi/morphology.omor.hfst
 	bin/finnpos-train data/ftb/config data/ftb/ftb.omorfi.train+dev.feats \
         data/ftb/ftb.omorfi.dev.feats share/finnpos/ftb_omorfi_model/ftb.omorfi.model
 	cp data/ftb/freq_words share/finnpos/ftb_omorfi_model
-	revision=`git describe --tags`
-	cat src/scripts/ftb-label | sed "s/REVISION/$$revision/" > bin/ftb-label
-	chmod 755 bin/ftb_label
+	cat src/scripts/ftb-label | sed "s/REVISION/$(REV)/" > bin/ftb-label
+	chmod 755 bin/ftb-label
 
 ftb-tagger-lre:finnpos
 	echo FTB WITHOUT OMORFI > $(LOGF)
