@@ -76,7 +76,8 @@ def main(iname, ifile, oname, ofile, olog, freq_words):
             i += 1
         else:
             i += 1
-            return
+            if sentence == []:
+                break
 
         if sentence == []:
             continue
