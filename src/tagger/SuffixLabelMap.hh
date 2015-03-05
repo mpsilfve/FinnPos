@@ -1,7 +1,8 @@
 #ifndef HEADER_SuffixLabelMap_hh
 #define HEADER_SuffixLabelMap_hh
 
-#include <unordered_map>
+//#include <unordered_map>
+#include "UnorderedMapSet.hh"
 #include <string>
 #include <vector>
 

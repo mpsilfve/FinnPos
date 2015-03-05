@@ -26,8 +26,8 @@ std::string get_suffix(const std::string &wf, unsigned int length);
 #ifndef TEST_LabelExtractor_cc
 
 #include <algorithm>
-#include <unordered_set>
-
+//#include <unordered_set>
+#include "UnorderedMapSet.hh"
 #include "Data.hh"
 
 #define PADDING "^^^^^^^^^^" 
@@ -328,7 +328,8 @@ bool LabelExtractor::operator==(const LabelExtractor &another) const
 #include <sstream>
 #include <string>
 #include <cassert>
-#include <unordered_set>
+//#include <unordered_set>
+#include "UnorderedMapSet.hh"
 
 #include "ParamTable.hh"
 #include "Data.hh"

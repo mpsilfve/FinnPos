@@ -23,7 +23,9 @@
 #define HEADER_LemmaExtractor_hh
 
 #include <vector>
-#include <unordered_map>
+//#include <unordered_map>
+#include "UnorderedMapSet.hh"
+
 #include <string>
 #include <utility>
 #include <iostream>

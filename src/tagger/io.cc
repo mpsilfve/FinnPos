@@ -210,8 +210,8 @@ void read_char_buffer(std::istream &in, std::string &buffer, bool reverse_bytes)
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include <unordered_map>
-
+//#include <unordered_map>
+#include "UnorderedMapSet.hh"
 int main(void)
 {
   // Empty input string.

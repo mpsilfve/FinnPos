@@ -39,7 +39,8 @@ bool has_upper(const std::string &word);
 #include <ctype.h>
 #include <cstring>
 #include <cfloat>
-#include <unordered_set>
+//#include <unordered_set>
+#include "UnorderedMapSet.hh"
 #include <locale>
 #include <cassert>
 
