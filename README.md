@@ -9,7 +9,7 @@ features
 * Fast estimation and application for large morphological label sets
   exceeding 1000 label types using a cascade model and averaged
   perceptron training.
-* The possibility of using the tagger to disambiguate the output of a
+* Possibility to use the tagger for disambiguating the output of a
   morphological analyzer.
 * Data driven lemmatization for OOV words.
 * Built-in support for complex morphological labels
