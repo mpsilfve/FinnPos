@@ -27,7 +27,8 @@ treebank [FinnTreeBank
 tagger boosts its tagging accuracy using the open-source Finnish
 morphological analyzer [OMorFi](https://code.google.com/p/omorfi/).
 
-FinnPos is licensed under the Apache Software Lincense Version
+FinnPos is licensed under the [Apache Software
+Lincense](http://www.apache.org/licenses/LICENSE-2.0) Version
 2.0. External resources such as morphological analyzers, external
 software and corpora, that are distributed with this code, may be
 licensed under different conditions. Their licenses are located in the
