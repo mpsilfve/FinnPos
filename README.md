@@ -11,10 +11,10 @@ Finnish. It is based on Conditional random field models and features
 * The possibility of using the tagger to disambiguate the output of a
   morphological analyzer.
 * Data driven lemmatization for OOV words.
-* Better support for complex morphological labels
+* Built-in support for complex morphological labels
   (e.g. "Noun+Plural+Nominative") that consist of multiple
-  sub-labels. Statistics are estimated from both complete labels and
-  sub-labels.
+  sub-labels. Statistics are estimated for both complete labels and
+  for sub-labels.
 * Flexible feature extraction. You can define your own feature sets or
   use a standard set of pre-defined features.
 
