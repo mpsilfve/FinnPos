@@ -1,14 +1,8 @@
 # FinnPos - CRF-based Morphological Tagging and Lemmatization
 
-FinnPos ia a morphological tagger and lemmatizer, that is, it takes
-sentences as input and provides each word in the sentence with a
-disambiguated morphological label and a lemma. For example the word
-"dogs" might receive a label "Noun+Singular+Nominative" and lemma
-"dog".
-
-FinnPos is a tool for training and using data driven taggers for
-morphologically rich languages such as Finnish. It is based on
-Conditional random field models and features
+FinnPos is a tool for training and using data driven morphological
+taggers and lemmatizers for morphologically rich languages such as
+Finnish. It is based on Conditional random field models and features
 
 * State-of-the-art tagging accuracy.
 * Fast estimation and application for large morphological label sets
