@@ -21,7 +21,7 @@ features
 
 In addition to utilities for training your own morphological taggers,
 FinnPos provides a morphological tagger, FinnTreeBank tagger, for
-Finnish, which is trained on a high quality manually constructed
+Finnish, which is trained on a high quality manually annotated
 Finnish treebank [FinnTreeBank
 1](http://www.ling.helsinki.fi/kieliteknologia/tutkimus/treebank/). FinnTreeBank
 tagger utilizes the open-source Finnish morphological analyzer
