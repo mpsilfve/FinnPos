@@ -38,7 +38,7 @@ int main(int argc, char * argv[])
     }
 
   std::string model_fn = argv[1];  
-  std::ifstream model_in(model_fn);
+  std::ifstream model_in(model_fn.c_str());
 
   if (not check(model_fn, model_in, std::cerr))
     { exit(1); }

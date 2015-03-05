@@ -41,7 +41,7 @@ Data::Data(const std::string &fn,
 	   ParamTable &pt, 
 	   unsigned int degree)
 {
-  std::ifstream ifile(fn);
+  std::ifstream ifile(fn.c_str());
 
   init(fn, ifile, is_gold, extractor, pt, degree); 
 }

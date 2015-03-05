@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
     {
       std::string model_file_name = argv[3];
 
-      std::ifstream model_in(model_file_name);
+      std::ifstream model_in(model_file_name.c_str());
 
       if (not check(model_file_name, model_in, std::cerr))
 	{ exit(1); }
