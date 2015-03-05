@@ -5,6 +5,8 @@ MODEL_DIR=$BIN_DIR/../share/finnpos/ftb_omorfi_model
 OMOR_DIR=$BIN_DIR/../share/finnpos/omorfi
 
 echo "FinnTreeBank tagger using OMorFi and FinnPos" 1>&2
+echo 1>&2
+
 $BIN_DIR/hfst-optimized-lookup $OMOR_DIR/morphology.omor.hfst |
 python3 $BIN_DIR/omorfi2finnpos.py ftb                        |
 python3 $BIN_DIR/finnpos-ratna-feats.py $MODEL_DIR/freq_words |
