@@ -48,7 +48,7 @@ int main(int argc, char * argv[])
   std::ifstream train_in(train_fn.c_str());
   std::ifstream dev_in(dev_fn.c_str());
 
-  std::ofstream out(output_fn);
+  std::ofstream out(output_fn.c_str());
 
   if (not check(config_fn, config_in, std::cerr) or
       not check(train_fn,   train_in, std::cerr) or
