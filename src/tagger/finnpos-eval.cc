@@ -83,17 +83,19 @@ int main(int argc, char * argv[])
 	    << " (gold standard)." << std::endl;
   std::cout << "Label accuracy for all words: " << acc.label_acc << std::endl;
   std::cout << "Label accuracy for IV words:  " 
-	    << (read_model ? std::to_string(acc.iv_label_acc) : "-") 
+	    << (read_model ? acc.iv_label_acc : -1) 
 	    << std::endl;
   std::cout << "Label accuracy for OOV words: " 
-	    << (read_model ? std::to_string(acc.oov_label_acc) : "-") 
+	    << (read_model ? acc.oov_label_acc : -1) 
 	    << std::endl;
   std::cout << "Lemma accuracy for all words: " << acc.lemma_acc << std::endl;
   std::cout << "Lemma accuracy for IV words:  " 
-	    << (read_model ? std::to_string(acc.iv_lemma_acc) : "-") 
+	    << (read_model ? acc.iv_lemma_acc : -1) 
 	    << std::endl;
   std::cout << "Lemma accuracy for OOV words: " 
-	    << (read_model ? std::to_string(acc.oov_lemma_acc) : "-") 
+	    << (read_model ? acc.oov_lemma_acc : -1) 
 	    << std::endl;
 
+  if (not read_model)
+    { std::cout << "-1 denotes unknown value."; }
 }
