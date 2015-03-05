@@ -177,10 +177,14 @@ int main(int argc, char **argv)
 	  break;
 	}
     }
+  
+  std::cerr << argv[0] << ": Reading from STDIN. Writing to STDOUT."
+	    << std::endl;
+
   // no more options, we should now be at the input filename
   if ( (optind + 1) < argc)
     {
-      std::cerr << "More than one input file given\n";
+      std::cerr << argv[0] << ": More than one input file given\n";
       return EXIT_FAILURE;
     }
   else if ( (optind + 1) == argc)
@@ -188,14 +192,14 @@ int main(int argc, char **argv)
       FILE * f = fopen(argv[(optind)], "r");
       if (f == NULL)
 	{
-	  std::cerr << "Could not open file " << argv[(optind)] << std::endl;
+	  std::cerr << argv[0] << ": Could not open file " << argv[(optind)] << std::endl;
 	  return 1;
 	}
       return setup(f);
     }
   else
     {
-      std::cerr << "No input file given\n";
+      std::cerr << argv[0] << ": No input file given\n";
       return EXIT_FAILURE;
     }
 }

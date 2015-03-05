@@ -43,11 +43,15 @@ int main(int argc, char * argv[])
   if (not check(model_fn, model_in, std::cerr))
     { exit(1); }
 
+  std::cerr << argv[0] << ": Loading tagger." << std::endl;
+
   Tagger tagger(std::cerr);
   tagger.load(model_in);
 
-  std::cerr << "Reading from STDIN. Writing to STDOUT." 
-	    << std::endl;
+  std::cerr 
+    << argv[0]
+    << ": Reading from STDIN. Writing to STDOUT." 
+    << std::endl;
 
   tagger.label(std::cin);
 }

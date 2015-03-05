@@ -242,8 +242,6 @@ void Tagger::store(std::ostream &out) const
 
 void Tagger::load(std::istream &in)
 {
-  msg_out << "Loading model." << std::endl;
-
   std::string id_string;
   read_val<std::string>(in, id_string, false);
 

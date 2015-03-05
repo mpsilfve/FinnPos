@@ -41,11 +41,11 @@ BOUNDARY = "_#_"
 MAX_SUF_LEN = 10
 MAX_PRE_LEN = 10
 
-def main(iname, ifile, oname, ofile, olog, freq_words):
+def main(pname, iname, ifile, oname, ofile, olog, freq_words):
     """ Read input from ifile and write extracted features to ofile. 
         This function doesn't check its argument streams. """
 
-    olog.write(('Reading from %s. Writing to %s.' + linesep) % (iname, oname))
+    olog.write(('%s: Reading from %s. Writing to %s.' + linesep) % (pname, iname, oname))
 
     i = 0
 
@@ -160,4 +160,4 @@ if __name__ == "__main__":
 
     freq_words = set(open(argv[1]).read().split('\n'))
 
-    exit(main("STDIN", stdin, "STDOUT", stdout, stderr, freq_words))
+    exit(main(argv[0], "STDIN", stdin, "STDOUT", stdout, stderr, freq_words))

@@ -32,10 +32,12 @@ def get_label(string, convert_type):
     else:
         return string[string.find('\t'):]
 
-def convert(ifile, convert_type):
+def convert(pname, ifile, convert_type):
     wf      = ''
     labels  = ''
     lemmas  = []
+
+    stderr.write("%s: Reading from STDIN. Writing to STDOUT\n" % (pname))
 
     for line in ifile:
         line = line.strip()
@@ -104,4 +106,4 @@ if __name__=='__main__':
                      convert_type)
         exit(1)
 
-    convert(stdin, convert_type)
+    convert(argv[0], stdin, convert_type)
