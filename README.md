@@ -13,10 +13,10 @@ Finnish. It is based on the [CRF](http://en.wikipedia.org/wiki/Conditional_rando
   (e.g. "Noun+Plural+Nominative").
 * Fully customizable unstructured feature extraction.
 
-In addition to utilities for training your own morphological taggers,
-FinnPos provides a morphological tagger, FinnTreeBank tagger, for
-Finnish, which is trained on a high quality manually annotated Finnish
-treebank [FinnTreeBank
+In addition to the tagger toolkit, FinnPos also provides a
+morphological tagger, FinnTreeBank tagger, for Finnish, which is
+trained on a high quality manually annotated Finnish treebank
+[FinnTreeBank
 1](http://www.ling.helsinki.fi/kieliteknologia/tutkimus/treebank/). FinnTreeBank
 tagger boosts its tagging accuracy using the open-source Finnish
 morphological analyzer [OMorFi](https://code.google.com/p/omorfi/).
