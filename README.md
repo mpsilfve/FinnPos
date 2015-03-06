@@ -7,7 +7,7 @@ Finnish. It is based on the [CRF](http://en.wikipedia.org/wiki/Conditional_rando
 * State-of-the-art tagging accuracy.
 * Fast estimation and application.
 * Support for large label sets exceeding 1000 label types.
-* Option to use taggers as morphological disambiguators.
+* Option to use taggers for morphological disambiguation.
 * Data driven lemmatization for OOV words.
 * Feature extraction using sub-labels of structured morphological labels
   (e.g. "Noun+Plural+Nominative").
