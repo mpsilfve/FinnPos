@@ -62,10 +62,10 @@ def main(pname, iname, ifile, oname, ofile, olog, freq_words):
             else:
                 fields = line.split('\t')
 
-                if len(fields) != 3 and len(fields) != 5:
+                if len(fields) != 1 and len(fields) != 3 and len(fields) != 5:
                     print(fields)
                     olog.write(("Line %u in file %s: Incorrect field count %u. " +
-                                "Should be 3 or 5." + linesep) 
+                                "Should be 1, 3 or 5." + linesep) 
                                % 
                                (i + 1, iname, len(fields)))
 
@@ -84,18 +84,25 @@ def main(pname, iname, ifile, oname, ofile, olog, freq_words):
 
         # Extract features for each sentence and write output to ofile.
         for i, line in enumerate(sentence):
-            wf    = ""
-            lemma = ""
-            label = ""
-            ann   = ""
+            wf    = '_'
+            feats = '_'
+            lemma = '_'
+            label = '_'
+            ann   = '_'
             
-            if len(line) == 3:
+            if len(line) == 1:
+                wf = line[0]
+                lemma, label, ann = '_', '_', '_'
+            elif len(line) == 3:
                 wf, lemma, label = line
                 ann = "_"
             else:
-                wf, _feats, lemma, label, ann = line
-                
-            features = []
+                wf, feats, lemma, label, ann = line
+
+            features = []                
+
+            if feats != '_':
+                features = feats.split(' ')
         
             if not ann in ['_', '']:
                 label_feats = [ "FEAT:" + label for label in 
