@@ -5,18 +5,13 @@ taggers and lemmatizers for morphologically rich languages such as
 Finnish. It is based on the [CRF](http://en.wikipedia.org/wiki/Conditional_random_field) framework and features
 
 * State-of-the-art tagging accuracy.
-* Fast estimation and application for large morphological label sets
-  exceeding 1000 label types using a cascade model and averaged
-  perceptron training.
-* Possibility to use the tagger for disambiguating the output of a
-  morphological analyzer.
+* Fast estimation and application.
+* Support for large label sets exceeding 1000 label types.
+* Option to use taggers as morphological disambiguators.
 * Data driven lemmatization for OOV words.
-* Built-in support for complex morphological labels
-  (e.g. "Noun+Plural+Nominative") that consist of multiple
-  sub-labels. Statistics are estimated for both complete labels and
-  for sub-labels.
-* Flexible feature extraction. You can define your own feature sets or
-  use a standard set of pre-defined features.
+* Feature extraction using sub-labels of structured morphological labels
+  (e.g. "Noun+Plural+Nominative").
+* Fully customizable unstructured feature extraction.
 
 In addition to utilities for training your own morphological taggers,
 FinnPos provides a morphological tagger, FinnTreeBank tagger, for
