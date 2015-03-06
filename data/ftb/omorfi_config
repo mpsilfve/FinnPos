@@ -1,3 +1,5 @@
+# Config file for FinnTreeBank tagger.
+
 guess_mass=0.999
 beam_mass=0.999
 max_train_passes=3
