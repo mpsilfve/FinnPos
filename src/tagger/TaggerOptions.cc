@@ -129,6 +129,9 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
 
       if (line.empty())
 	{ continue; }
+      
+      if (line[0] == '#')
+	{ continue; }
 
       if (line.find(estimator_id) != std::string::npos)
 	{ estimator = get_estimator(strip(line, estimator_id)); }
