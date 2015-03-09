@@ -1,22 +1,22 @@
 # FinnPos - CRF-based Morphological Tagging and Lemmatization
 
-FinnPos is a tool for training and applying data driven morphological
-taggers and lemmatizers for morphologically rich languages such as
-Finnish. It is based on the [CRF](http://en.wikipedia.org/wiki/Conditional_random_field) framework and features
+FinnPos is a morphological tagging and lemmatization toolkit for
+morphologically rich languages such as Finnish. It is based on the
+[CRF](http://en.wikipedia.org/wiki/Conditional_random_field) framework
+and features
 
 * State-of-the-art tagging accuracy.
 * Fast estimation and application.
 * Support for large label sets exceeding 1000 label types.
-* Option to use taggers for morphological disambiguation.
+* An option to use taggers for morphological disambiguation.
 * Data driven lemmatization for OOV words.
 * Feature extraction using sub-labels of structured morphological labels
   (e.g. "Noun+Plural+Nominative").
-* Fully customizable unstructured feature extraction.
+* Customizable feature extraction.
 
-In addition to the tagger toolkit, FinnPos also provides a
-morphological tagger, FinnTreeBank tagger, for Finnish, which is
-trained on a high quality manually annotated Finnish treebank
-[FinnTreeBank
+FinnPos also provides an accurate morphological tagger for Finnish:
+FinnTreeBank tagger is trained on a high quality manually annotated
+Finnish treebank [FinnTreeBank
 1](http://www.ling.helsinki.fi/kieliteknologia/tutkimus/treebank/). FinnTreeBank
 tagger boosts its tagging accuracy using the open-source Finnish
 morphological analyzer [OMorFi](https://code.google.com/p/omorfi/).
