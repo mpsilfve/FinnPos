@@ -32,10 +32,20 @@ def get_label(string, convert_type):
     else:
         return string[string.find('\t'):]
 
+def get_lemmas(analyses, convert_type):
+    return [(get_label(a, convert_type), get_lemma(a, convert_type)) 
+            for a in analyses]
+
+def get_labels(analyses, convert_type):
+    return [get_label(a, convert_type) for a in analyses]
+
+def filter_ftb_analyses(analyses):
+    min_wbs = min(map(lambda x: x.count('[WORD_ID='), analyses))
+    return list(filter(lambda x: x.count('[WORD_ID=') == min_wbs, analyses))
+
 def convert(pname, ifile, convert_type):
-    wf      = ''
-    labels  = ''
-    lemmas  = []
+    wf       = ''
+    analyses = []
 
     stderr.write("%s: Reading from STDIN. Writing to STDOUT\n" % (pname))
 
@@ -43,11 +53,31 @@ def convert(pname, ifile, convert_type):
         line = line.strip()
 
         if line == '' and wf != '':
-            lemmas = list(set(lemmas))
-            lemma_str = str(lemmas).replace(' ','')
-            print('%s\t%s\t%s\t%s\t%s' % (wf, '_', '_', labels, lemma_str))
 
-            wf, labels, lemmas = '', '', []
+            if convert_type == 'ftb' and len(analyses) > 0:
+                analyses = filter_ftb_analyses(analyses)
+
+            lemmas = get_lemmas(analyses, convert_type)
+            lemmas = list(set(lemmas))
+
+            lemma_str = str(lemmas).replace(' ','')
+
+            labels = get_labels(analyses, convert_type)
+
+            feats = '_'
+
+            if labels != []:
+                label_feats = map(lambda x: "OMORFI_FEAT:" + x, labels)
+                feats = ' '.join(label_feats)
+
+            label_str = '_' 
+
+            if labels != []:
+                ' '.join(labels)
+                
+            print('%s\t%s\t%s\t%s\t%s' % (wf, feats, '_', label_str, lemma_str))
+
+            wf, analyses = '', []
             
         elif line == '':
             continue
@@ -66,30 +96,16 @@ def convert(pname, ifile, convert_type):
                 wf, analysis = line.split('\t')
 
                 if analysis == '+?':
-                    labels = '_'
+                    analyses = []
                 else:
-                    label = get_label(analysis, convert_type)
-                    lemma = get_lemma(analysis, convert_type)
-            
-                    if labels != '':
-                        labels += ' '
-                
-                    labels += label
-                    lemmas.append((label, lemma))
+                    analyses.append(analysis)
             else:
                 wf, lemma, label = line.split('\t')
 
-                lemma = lemma.replace('|','')
-
                 if label == '+?':
-                    labels = '_'
-
+                    analyses = []
                 else:
-                    if labels != '':
-                        labels += ' '
-                
-                    labels += label
-                    lemmas.append((label, lemma))
+                    analyses.append(lemma + '\t' + label)
 
 if __name__=='__main__':
 

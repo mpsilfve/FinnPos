@@ -104,11 +104,11 @@ def main(pname, iname, ifile, oname, ofile, olog, freq_words):
             if feats != '_':
                 features = feats.split(' ')
         
-            if not ann in ['_', '']:
-                label_feats = [ "FEAT:" + label for label in 
-                                map(lambda x: x[0], eval(ann)) ]
+#            if not ann in ['_', '']:
+#                label_feats = [ "FEAT:" + label for label in 
+#                                map(lambda x: x[0], eval(ann)) ]
 
-                features += label_feats
+#                features += label_feats
 
             features.append('PPWORD=' + get_wf(i - 2, sentence))
             features.append('PWORD='  + get_wf(i - 1, sentence))

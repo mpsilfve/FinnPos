@@ -17,5 +17,6 @@ for line in stdin:
         
         if label in lemma_dict:
             lemma = lemma_dict[label]
+            lemma = lemma.lower()
 
         print('%s\t%s\t%s\t%s\t%s' % (wf, feats, lemma, label, ann))

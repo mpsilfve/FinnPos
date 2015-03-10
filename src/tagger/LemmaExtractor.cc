@@ -432,9 +432,11 @@ std::string LemmaExtractor::get_lemma(const std::string &word_form,
   
   std::string lemma = lc_word_form.substr(0, pos) + lemma_suffix;
 
+  /*
   if (has_upper(word_form))
     { return init_uppercase(lemma); }
-  
+  */
+
   return lemma;
 }
 
