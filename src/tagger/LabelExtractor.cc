@@ -154,6 +154,9 @@ void LabelExtractor::train(Data &data)
 
 	  unsigned int label = w.get_label();
 
+	  if (lexicon_counts.count(wf) == 0 || lexicon_counts[wf].count(label) == 0)
+	    { lexicon_counts[wf][label] = 0; }
+	      
 	  ++lexicon_counts[wf][label];
 	}
     }

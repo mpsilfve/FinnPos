@@ -257,11 +257,21 @@ void ParamTable::update_unstruct(unsigned int feature_template,
 				 unsigned int label, 
 				 float ud)
 {
+  size_t id = get_unstruct_param_id(feature_template, label);
+  
+  if (unstruct_param_table.count(id) == 0)
+    { unstruct_param_table[id] = 0; }
+
   unstruct_param_table[get_unstruct_param_id(feature_template, label)] += ud;
 }
 
 void ParamTable::update_struct1(unsigned int label, float ud, bool use_sub_labels)
 {
+  size_t id = get_struct_param_id(label);
+  
+  if (struct_param_table.count(id) == 0)
+    { struct_param_table[id] = 0; }
+
   struct_param_table[get_struct_param_id(label)] += ud;
 
   if (label_extractor != 0 and use_sub_labels)
@@ -270,6 +280,11 @@ void ParamTable::update_struct1(unsigned int label, float ud, bool use_sub_label
 
       for (unsigned int i = 0; i < sub_labels.size(); ++i)
 	{
+	  size_t id = get_struct_param_id(sub_labels[i]);
+  
+	  if (struct_param_table.count(id) == 0)
+	    { struct_param_table[id] = 0; }
+
 	  struct_param_table[get_struct_param_id(sub_labels[i])] += ud;
 	}
     }
@@ -280,6 +295,11 @@ void ParamTable::update_struct2(unsigned int plabel,
 				float ud,
 				bool use_sub_labels)
 {
+  size_t id = get_struct_param_id(plabel, label);
+  
+  if (struct_param_table.count(id) == 0)
+    { struct_param_table[id] = 0; }
+
   struct_param_table[get_struct_param_id(plabel, label)] += ud;
 
   if (label_extractor != 0 and use_sub_labels)
@@ -291,6 +311,11 @@ void ParamTable::update_struct2(unsigned int plabel,
 	{
 	  for (unsigned int j = 0; j < sub_labels.size(); ++j)
 	    {
+	      size_t id = get_struct_param_id(psub_labels[i], sub_labels[j]);
+	      
+	      if (struct_param_table.count(id) == 0)
+		{ struct_param_table[id] = 0; }
+
 	      struct_param_table[get_struct_param_id(psub_labels[i], 
 						     sub_labels[j])] += ud;
 	    }
@@ -303,6 +328,11 @@ void ParamTable::update_struct3(unsigned int pplabel,
 			       unsigned int label, 
 			       float ud)
 {
+  size_t id = get_struct_param_id(pplabel, plabel, label);
+  
+  if (struct_param_table.count(id) == 0)
+    { struct_param_table[id] = 0; }
+
   struct_param_table[get_struct_param_id(pplabel, plabel, label)] += ud;
 }
 
