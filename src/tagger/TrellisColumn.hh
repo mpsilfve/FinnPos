@@ -38,7 +38,7 @@ class TrellisColumn
 		unsigned int beam_width = -1);
 
   void set_ncol(TrellisColumn * pcol);
-  void set_word(const Word &word);
+  void set_word(const Word &word, int plabels);
 
   void compute_fw(const ParamTable &pt);
   void compute_bw(const ParamTable &pt);

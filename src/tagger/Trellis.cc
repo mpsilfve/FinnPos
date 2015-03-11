@@ -55,13 +55,16 @@ Trellis::Trellis(Sentence &sent,
 {
   reserve(sent.size(), boundary_label);
 
-  for (unsigned int i = 0; i < sent.size() - 1; ++i)
+  for (unsigned int i = 0; i < sent.size(); ++i)
     { 
-      trellis[i].set_word(sent.at(i));
-      trellis[i].set_ncol(&trellis[i+1]); 
+      trellis[i].set_word(sent.at(i),
+			  i == 0 ? 1 : sent.at(i - 1).get_label_count());
     }
 
-  trellis.back().set_word(sent.at(sent.size() - 1));
+  for (unsigned int i = 0; i < sent.size() - 1; ++i)
+    { 
+      trellis[i].set_ncol(&trellis[i+1]); 
+    }
 }
 
 LabelVector Trellis::get_maximum_a_posteriori_assignment(const ParamTable &pt)

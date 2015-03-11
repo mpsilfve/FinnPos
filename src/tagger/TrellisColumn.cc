@@ -58,12 +58,12 @@ void TrellisColumn::set_ncol(TrellisColumn * ncol)
   ncol->pcol = this;
 }
 
-void TrellisColumn::set_word(const Word &word)
+void TrellisColumn::set_word(const Word &word, int plabels)
 {
   this->word = &word;
 
   label_count  = word.get_label_count();  
-  plabel_count = (pcol == 0 ? 1 : pcol->label_count);
+  plabel_count = plabels; 
 
   reserve(label_count * plabel_count);
 
