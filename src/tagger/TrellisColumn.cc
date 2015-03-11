@@ -283,18 +283,6 @@ void TrellisColumn::compute_viterbi(const ParamTable &pt)
       pcol->compute_viterbi(pt);
     }
 
-  /*
-  for (unsigned int i = 0; i < label_count; ++i)
-    {
-      float em = get_emission_score(pt, i); 
-
-      for (unsigned int j = 0; j < plabel_count; ++j)
-	{
-	  set_viterbi_tr_score(pt, j, i);
-
-	  get_cell(j, i).viterbi += em;
-	}
-	}*/
   for (unsigned int i = 0; i < label_count; ++i)
     {
       float em = get_emission_score(pt, i); 
@@ -325,7 +313,7 @@ void TrellisColumn::compute_viterbi(const ParamTable &pt)
 	      unsigned int pplabel = (pcell->pcell == 0 ? boundary_label : pcell->pcell->label);
 	      unsigned int plabel  = pcell->label;      
 	      unsigned int label   = get_label(i);
-
+	      
 	      float pcol_score = (pcol == 0 ? 0 : pcell->viterbi);
 
 	      float tr_score = pt.get_all_struct_fw(pplabel, plabel, label, STRUCT_SL);
@@ -348,7 +336,8 @@ void TrellisColumn::compute_viterbi(const ParamTable &pt)
 	    }
 	}
     }
-  std::sort(cells_in_beam.begin(), cells_in_beam.end(), CmpTrellisCell());
+
+  std::stable_sort(cells_in_beam.begin(), cells_in_beam.end(), CmpTrellisCell());
 }
 
 TrellisCell * TrellisColumn::get_beam_cell(unsigned int i)
