@@ -143,15 +143,15 @@ void Tagger::evaluate(std::istream &in)
   
   for (unsigned int i = 0; i < data.size(); ++i)
     {
-      trellises.push_back(Trellis(data_copy.at(i), 
-				  label_extractor.get_boundary_label(), 
-				  tagger_options.beam));
+      trellises.push_back(new Trellis(data_copy.at(i), 
+				      label_extractor.get_boundary_label(), 
+				      tagger_options.beam));
     }
 
   // Tag test data.
   for (unsigned int j = 0; j < trellises.size(); ++j)
     {
-      trellises[j].set_maximum_a_posteriori_assignment(param_table);      
+      trellises[j]->set_maximum_a_posteriori_assignment(param_table);      
     }
   
   data_copy.predict_lemma(lemma_extractor, label_extractor);
@@ -169,6 +169,10 @@ void Tagger::evaluate(std::istream &in)
 	  << "%" 
 	  << std::endl;
 
+  for (unsigned int i = 0; i < data.size(); ++i)
+    {
+      delete trellises[i];
+    }
 }
 
 void Tagger::label(std::istream &in)
@@ -180,15 +184,15 @@ void Tagger::label(std::istream &in)
   
   for (unsigned int i = 0; i < data.size(); ++i)
     {
-      trellises.push_back(Trellis(data.at(i), 
-				  label_extractor.get_boundary_label(), 
-				  tagger_options.beam));
+      trellises.push_back(new Trellis(data.at(i), 
+				      label_extractor.get_boundary_label(), 
+				      tagger_options.beam));
     }
 
   // Tag test data.
   for (unsigned int j = 0; j < trellises.size(); ++j)
     {
-      trellises[j].set_maximum_a_posteriori_assignment(param_table);      
+      trellises[j]->set_maximum_a_posteriori_assignment(param_table);      
     }
   
   data.predict_lemma(lemma_extractor, label_extractor);
@@ -207,6 +211,11 @@ void Tagger::label(std::istream &in)
 		    << "\t" << data.at(i).at(j).get_annotations() << std::endl;
 	}
       std::cout << std::endl;
+    }
+
+  for (unsigned int i = 0; i < data.size(); ++i)
+    {
+      delete trellises[i];
     }
 }
 

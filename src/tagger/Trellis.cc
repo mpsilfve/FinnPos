@@ -317,7 +317,7 @@ void populate(Data &data,
 	      unsigned int beam)
 {
   for (unsigned int i = 0; i < data.size(); ++i)
-    { v.push_back(Trellis(data.at(i), boundary_label, beam)); }
+    { v.push_back(new Trellis(data.at(i), boundary_label, beam)); }
 }
 
 #else // TEST_Trellis_cc

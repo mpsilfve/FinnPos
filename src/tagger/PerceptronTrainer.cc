@@ -59,24 +59,24 @@ void PerceptronTrainer::train(const Data &train_data,
 
   for (unsigned int i = 0; i < train_data.size(); ++i)
     {
-      train_trellises.push_back(Trellis(train_data_copy.at(i), boundary_label));
+      train_trellises.push_back(new Trellis(train_data_copy.at(i), boundary_label));
 
       if (beam != static_cast<unsigned int>(-1))
-	{ train_trellises.back().set_beam(beam); }
+	{ train_trellises.back()->set_beam(beam); }
       if (beam_mass != -1)
-	{ train_trellises.back().set_beam_mass(beam_mass); }
+	{ train_trellises.back()->set_beam_mass(beam_mass); }
     }
 
   TrellisVector dev_trellises;
 
   for (unsigned int i = 0; i < dev_data.size(); ++i)
     {
-      dev_trellises.push_back(Trellis(dev_data_copy.at(i), boundary_label, beam));
+      dev_trellises.push_back(new Trellis(dev_data_copy.at(i), boundary_label, beam));
 
       if (beam != static_cast<float>(-1))
-	{ dev_trellises.back().set_beam(beam); }
+	{ dev_trellises.back()->set_beam(beam); }
       if (beam_mass != -1)
-	{ dev_trellises.back().set_beam_mass(beam_mass); }
+	{ dev_trellises.back()->set_beam_mass(beam_mass); }
     }
 
   float best_dev_acc = -1;
@@ -95,7 +95,7 @@ void PerceptronTrainer::train(const Data &train_data,
       // Train pass.
       for (unsigned int j = 0; j < train_trellises.size(); ++j)
 	{
-	  train_trellises[j].set_maximum_a_posteriori_assignment
+	  train_trellises[j]->set_maximum_a_posteriori_assignment
 	    (pos_params);
 
 	  update(train_data.at(j), train_data_copy.at(j));
@@ -111,7 +111,7 @@ void PerceptronTrainer::train(const Data &train_data,
       // Tag dev data.
       for (unsigned int j = 0; j < dev_trellises.size(); ++j)
 	{
-	  dev_trellises[j].set_maximum_a_posteriori_assignment(pt);
+	  dev_trellises[j]->set_maximum_a_posteriori_assignment(pt);
 	}
 
       float acc = dev_data.get_acc(dev_data_copy, lemma_extractor).label_acc;
@@ -135,6 +135,16 @@ void PerceptronTrainer::train(const Data &train_data,
   pt = best_params;
   pt.set_label_extractor(label_extractor);
   pt.set_trained();
+
+  for (TrellisVector::const_iterator it = train_trellises.begin();
+       it != train_trellises.end();
+       ++it)
+    { delete *it; }
+
+  for (TrellisVector::const_iterator it = dev_trellises.begin();
+       it != dev_trellises.end();
+       ++it)
+    { delete *it; }
 }
 
 void PerceptronTrainer::train_lemmatizer(const Data &train_data, 
