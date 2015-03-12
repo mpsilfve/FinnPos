@@ -376,7 +376,7 @@ unsigned int TrellisColumn::beam_cell_count(void)
     {
       prefix_mass = expsumlog(prefix_mass, cells_in_beam.at(i)->fw);
 
-      if (i > 20 or (exp(prefix_mass - tot_mass) > beam_mass and i > 4))
+      if (i > 200 or (exp(prefix_mass - tot_mass) > beam_mass and i > 4))
 	{
 	  return i + 1; 
 	}
