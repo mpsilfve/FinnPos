@@ -49,6 +49,7 @@ public:
 	     std::istream &dev_in);
 
   void label(std::istream &in);
+  void label_stream(std::istream &in);
 
   void store(std::ostream &out) const;
   void load(std::istream &in);

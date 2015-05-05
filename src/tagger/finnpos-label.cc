@@ -52,6 +52,6 @@ int main(int argc, char * argv[])
     << argv[0]
     << ": Reading from STDIN. Writing to STDOUT." 
     << std::endl;
-
-  tagger.label(std::cin);
+  
+  tagger.label_stream(std::cin);
 }
