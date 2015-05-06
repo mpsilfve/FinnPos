@@ -137,6 +137,11 @@ def main(pname, iname, ifile, oname, ofile, olog, freq_words):
                         (wf, feat_str, lemma, label, ann))
         
         ofile.write(linesep)
+        
+        # Ensure that the line is written immediately so that features
+        # get passed to finnpos-label in real time when labeling text
+        # from a stream.
+        ofile.flush()
 
     return EXIT_SUCCESS
 
