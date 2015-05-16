@@ -26,3 +26,7 @@
 *.exe
 *.out
 *.app
+
+# test executables
+*.dSYM/
+TEST_*
