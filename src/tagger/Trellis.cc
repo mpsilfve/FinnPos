@@ -423,8 +423,8 @@ int main(void)
   pt.update_struct3(0,0,9,7.494);
   pt.update_struct2(0,9,5.891, false);
   pt.update_struct2(0,1,0.883, false);
-  pt.update_struct1(9,2.275);
-  pt.update_struct1(1,3.68);
+  pt.update_struct1(9,2.275, false);
+  pt.update_struct1(1,3.68, false);
 
   pt.update_struct3(1,1,1,5.206);
   pt.update_struct3(1,1,9,4.958);
@@ -475,15 +475,15 @@ int main(void)
 
 	      f += pt.get_struct3(0, 0, labels[i]);
 	      f += pt.get_struct2(0, labels[i], false);
-	      f += pt.get_struct1(labels[i]);
+	      f += pt.get_struct1(labels[i], false);
 
 	      f += pt.get_struct3(0, labels[i], labels[j]);
 	      f += pt.get_struct2(labels[i], labels[j], false);
-	      f += pt.get_struct1(labels[j]);
+	      f += pt.get_struct1(labels[j], false);
 
 	      f += pt.get_struct3(labels[i], labels[j], labels[k]);
 	      f += pt.get_struct2(labels[j], labels[k], false);
-	      f += pt.get_struct1(labels[k]);
+	      f += pt.get_struct1(labels[k], false);
 	      
 	      f += pt.get_struct3(labels[j], labels[k], 0);
 	      f += pt.get_struct3(labels[k], 0, 0);
