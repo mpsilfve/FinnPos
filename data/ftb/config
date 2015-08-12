@@ -1,4 +1,6 @@
-guess_mass=0.999
-beam_mass=0.999
-max_train_passes=2
-max_lemmatizer_passes=7
+# Config file for FinnTreeBank tagger.
+
+guess_mass=0.99999
+beam_mass=0.99999
+max_train_passes=3
+max_lemmatizer_passes=16
