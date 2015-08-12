@@ -1,4 +1,6 @@
+# Config file for Turku Treebank tagger with OMorFi.
+
 guess_mass=0.999
 beam_mass=0.999
-max_lemmatizer_passes=17
+max_lemmatizer_passes=10
 max_train_passes=7
