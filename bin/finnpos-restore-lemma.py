@@ -10,8 +10,10 @@ for line in stdin:
     else:
         wf, feats, lemma, label, ann = line.split('\t')
 
+        lemmas = ann
         if ann.find(' ') != -1:
-            ann = ann[:ann.find(' ')]
+            lemmas = ann[:ann.find(' ')]
+            ann = [ann.find(' '):]
 
         lemma_dict = dict(eval(ann))
         
