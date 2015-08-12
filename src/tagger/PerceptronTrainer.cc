@@ -27,7 +27,7 @@
 
 #include "Trellis.hh"
 
-#define STRUCT_SL 0
+#define STRUCT_SL 1
 
 PerceptronTrainer::PerceptronTrainer(unsigned int max_passes,
 				     unsigned int max_useless_passes,
@@ -154,24 +154,61 @@ void PerceptronTrainer::train_lemmatizer(const Data &train_data,
 {
   std::vector<Word> train_words;
   std::vector<Word> dev_words;
+  
+  std::unordered_map<unsigned int , unsigned int> class_counts;
 
   for (unsigned int i = 0; i < train_data.size(); ++i)
     {
       for (unsigned int j = 0; j < train_data.at(i).size(); ++j)
 	{
-	  const Word &w = train_data.at(i).at(j);
+	  Word w = train_data.at(i).at(j);
 
 	  Word * ww = lemma_e.extract_feats(w.get_word_form(),
 					    label_e.get_label_string(w.get_label()));
 
-	  ww->set_label(lemma_e.get_class_number(w.get_word_form(), 
-						 w.get_lemma()));
+	  unsigned int klass = lemma_e.get_class_number(w.get_word_form(), 
+							w.get_lemma());
+
+	  ww->set_label(klass);
 	  
+	  class_counts[klass] += 1;
+
 	  train_words.push_back(*ww);
 
 	  delete ww;
+
+	  for (size_t i = 0; i < w.analyzer_lemmas.size(); ++i)
+	    {
+	      if (w.analyzer_lemmas[i].first == w.get_label() and
+		  w.analyzer_lemmas[i].second == w.get_lemma())
+		{ continue; }
+
+	      ww = lemma_e.extract_feats
+		(w.get_word_form(),
+		 label_e.get_label_string(w.analyzer_lemmas[i].first));
+	      
+	      ww->set_label(lemma_e.get_class_number(w.get_word_form(), 
+						     w.analyzer_lemmas[i].second));
+
+	      train_words.push_back(*ww);
+
+	      delete ww;
+	      }
 	}
     }
+ 
+  std::vector<Word> train_words_copy;
+
+  for (unsigned int i = 0; i < train_words.size(); ++i)
+    {
+      if (class_counts[train_words[i].get_label()] > 0)
+      	{ train_words_copy.push_back(train_words[i]); }
+    }
+
+  train_words = train_words_copy;
+  
+  std::srand(0);
+  std::random_shuffle(train_words.begin(), train_words.end());
 
   for (unsigned int i = 0; i < dev_data.size(); ++i)
     {
@@ -260,13 +297,43 @@ void PerceptronTrainer::update(const Sentence &gold_s,
 {
   ++iter;
 
-  for (unsigned int i = 1; i < sys_s.size(); ++i)
+  //float max_violation = 0;
+  unsigned int max_violation_id = 0;
+  
+  float sys_score = 0;
+  float gold_score = 0;
+
+  for (unsigned int i = 0; i < sys_s.size(); ++i)
     {
       unsigned int gold_label = gold_s.at(i).get_label();
       unsigned int sys_label = sys_s.at(i).get_label();
 
-      unsigned int pgold_label = gold_s.at(i - 1).get_label();
-      unsigned int psys_label = sys_s.at(i - 1).get_label();
+      unsigned int pgold_label = (i < 1 ? boundary_label : gold_s.at(i - 1).get_label());
+      unsigned int psys_label = (i < 1 ? boundary_label : sys_s.at(i - 1).get_label());
+
+      unsigned int ppgold_label = (i < 2 ? boundary_label : gold_s.at(i - 2).get_label());
+      unsigned int ppsys_label = (i < 2 ? boundary_label : sys_s.at(i - 2).get_label());
+
+      sys_score += pos_params.get_all_unstruct(sys_s.at(i), sys_label, STRUCT_SL);
+      sys_score += pos_params.get_all_struct_fw(ppsys_label, psys_label, sys_label, STRUCT_SL);
+
+      gold_score += pos_params.get_all_unstruct(gold_s.at(i), gold_label, STRUCT_SL);
+      gold_score += pos_params.get_all_struct_fw(ppgold_label, pgold_label, gold_label, STRUCT_SL);
+
+
+      if (sys_score >= gold_score)
+	{
+	  max_violation_id = i;
+	}
+    }
+
+  for (unsigned int i = 0; i /*<= max_violation_id*/ < sys_s.size() ; ++i)
+    {
+      unsigned int gold_label = gold_s.at(i).get_label();
+      unsigned int sys_label = sys_s.at(i).get_label();
+
+      unsigned int pgold_label = (i < 1 ? boundary_label : gold_s.at(i - 1).get_label());
+      unsigned int psys_label = (i < 1 ? boundary_label : sys_s.at(i - 1).get_label());
 
       unsigned int ppgold_label = (i < 2 ? boundary_label : gold_s.at(i - 2).get_label());
       unsigned int ppsys_label = (i < 2 ? boundary_label : sys_s.at(i - 2).get_label());
@@ -274,14 +341,14 @@ void PerceptronTrainer::update(const Sentence &gold_s,
       // Unstruct params.
       pos_params.update_all_unstruct(gold_s.at(i), gold_label, 1);
       neg_params.update_all_unstruct(gold_s.at(i), gold_label, -iter);
-
+      
       pos_params.update_all_unstruct(sys_s.at(i), sys_label, -1);
       neg_params.update_all_unstruct(sys_s.at(i), sys_label, iter);
-
+      
       // Struct params.
       pos_params.update_all_struct_fw(ppgold_label, pgold_label, gold_label, 1, STRUCT_SL);
       neg_params.update_all_struct_fw(ppgold_label, pgold_label, gold_label, -iter, STRUCT_SL);
-
+      
       pos_params.update_all_struct_fw(ppsys_label, psys_label, sys_label, -1, STRUCT_SL);
       neg_params.update_all_struct_fw(ppsys_label, psys_label, sys_label, iter, STRUCT_SL);
     }

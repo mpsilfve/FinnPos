@@ -231,9 +231,17 @@ void Data::print(std::ostream &out, LabelExtractor &label_extractor)
 
 void Data::randomize(void)
 {
-  // Use fixed seed, in order to assure the replicability of experiments.q
+  // Use fixed seed, in order to assure the replicability of experiments.
   std::srand(0);
   std::random_shuffle(data.begin(), data.end());
+}
+
+void Data::parse_aux_data(StringPairVector &p) const
+{
+  for (unsigned int i = 0; i < data.size(); ++i)
+    {
+      data[i].parse_aux_data(p);
+    }
 }
 
 #else // TEST_Data_cc

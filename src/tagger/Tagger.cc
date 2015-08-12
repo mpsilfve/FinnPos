@@ -28,9 +28,12 @@
 #include "PerceptronTrainer.hh"
 #include "SGDTrainer.hh"
 #include "Trellis.hh"
+#include "process_aux.hh"
 
 #define FINN_POS_ID_STRING "FinnPosModel"
 const int ENDIANNESS_MARKER=1;
+
+using finnposaux::StringPairVector;
 
 Tagger::Tagger(std::ostream &msg_out):
   msg_out(msg_out)
@@ -91,7 +94,7 @@ void Tagger::train(std::istream &train_in,
 		  tagger_options.degree);
   train_data.clear_label_guesses(); 
   train_data.randomize();
-  
+
   msg_out << "Training label guesser." << std::endl;
   label_extractor.train(train_data);
   param_table.set_label_extractor(label_extractor);
@@ -102,8 +105,8 @@ void Tagger::train(std::istream &train_in,
 
   msg_out << "Setting label guesses." << std::endl;
   train_data.set_label_guesses(label_extractor, 0, tagger_options.guess_mass);
-  dev_data.set_label_guesses(label_extractor, 1, 
-			     0.9999 /*tagger_options.guess_mass*/);
+  dev_data.set_label_guesses(label_extractor, 0, 
+			     0.99 /*tagger_options.guess_mass*/);
 
   msg_out << "Estimating lemmatizer parameters." << std::endl;
   lemma_extractor.set_max_passes(tagger_options.max_lemmatizer_passes);

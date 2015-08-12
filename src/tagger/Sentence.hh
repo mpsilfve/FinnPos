@@ -31,6 +31,9 @@
 
 typedef std::vector<Word> WordVector;
 
+#include "process_aux.hh"
+using finnposaux::StringPairVector;
+
 class Sentence
 {
  public:
@@ -60,6 +63,8 @@ class Sentence
   void unset_label(void);
 
   void print(std::ostream &out, LabelExtractor &label_extractor);
+
+  void parse_aux_data(StringPairVector &p) const;
 
  private:
   WordVector sentence;

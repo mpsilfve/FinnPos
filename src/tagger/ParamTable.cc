@@ -169,7 +169,7 @@ float ParamTable::get_struct2(unsigned int plabel, unsigned int label, bool use_
   float res = 0;
 
   if (it != struct_param_table.end())
-    { return res += it->second; }
+    { res += it->second; }
 
   if (label_extractor != 0 and use_sub_labels)
     {

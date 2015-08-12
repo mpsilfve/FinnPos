@@ -30,6 +30,9 @@
 #include "ParamTable.hh"
 #include "exceptions.hh"
 
+#include "process_aux.hh"
+using finnposaux::StringPairVector;
+
 #define BOUNDARY_WF "_#_"
 
 #define NO_STRING ""
@@ -79,7 +82,15 @@ public:
 
   std::string to_string(LabelExtractor &label_extractor) const;
 
+  void parse_aux_data(StringPairVector &p) const;
+  
+  void set_analyzer_lemmas(LabelExtractor &le);
+
  private:
+  typedef std::pair<unsigned int, std::string> LabelLemmaPair;
+  typedef std::vector<LabelLemmaPair> LabelLemmaVector;
+;
+
   std::string           word_form;
   std::string           lemma;
   std::string           annotations;
@@ -88,6 +99,9 @@ public:
   
   LabelVector           label_candidates;
   FeatureTemplateVector feature_templates;
+  LabelLemmaVector      analyzer_lemmas;
+
+  friend class PerceptronTrainer;
 };
 
 #endif // HEADER_Word_hh

@@ -99,7 +99,8 @@ protected:
 			    LabelVector &class_vector) const;
 
   Word *  extract_feats(const std::string &word_form, 
-			const std::string &label);
+			const std::string &label,
+			bool use_label = true);
   
   unsigned int get_lemma_candidate_class(const std::string &word_form, 
 					 const std::string &label);

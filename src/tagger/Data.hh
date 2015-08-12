@@ -33,6 +33,9 @@
 
 typedef std::vector<Sentence> SentenceVector;
 
+#include "process_aux.hh"
+using finnposaux::StringPairVector;
+
 struct Acc
 {
   float label_acc;
@@ -103,6 +106,8 @@ class Data
   void print(std::ostream &out, LabelExtractor &label_extractor);
 
   void randomize(void);
+
+  void parse_aux_data(StringPairVector &p) const;
 
  private:
   SentenceVector data;

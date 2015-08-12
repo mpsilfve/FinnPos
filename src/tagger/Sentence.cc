@@ -69,6 +69,7 @@ Sentence::Sentence(std::istream &ifile,
 				  pt.get_feat_templates(entry.feat_templates),
 				  label_extractor.get_labels(entry.labels),
 				  entry.annotations));
+	  sentence.back().set_analyzer_lemmas(label_extractor);
 
 	  if (is_gold)
 	    {
@@ -175,6 +176,14 @@ void Sentence::print(std::ostream &out, LabelExtractor &label_extractor)
       
       if (i + 1 < size() and at(i + 1).get_word_form() != BOUNDARY_WF)
 	{ out << std::endl; }
+    }
+}
+
+void Sentence::parse_aux_data(StringPairVector &p) const
+{
+  for (unsigned int i = 0; i < sentence.size(); ++i)
+    { 
+      sentence[i].parse_aux_data(p);
     }
 }
 

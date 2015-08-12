@@ -128,7 +128,29 @@ std::string Word::to_string(LabelExtractor &label_extractor) const
     label_extractor.get_label_string(get_label()) + '\t' +
     get_annotations();
 }
+
+void Word::parse_aux_data(StringPairVector &p) const
+{
+  try 
+    {
+      finnposaux::parse_aux_field(annotations, p);
+    }
+  catch (...)
+    {}
+}
   
+void Word::set_analyzer_lemmas(LabelExtractor &le)
+{
+  StringPairVector sp;
+  parse_aux_data(sp);
+
+  for (size_t i = 0; i < sp.size(); ++i)
+    {
+      analyzer_lemmas.push_back
+	(LabelLemmaPair(le.get_label(sp[i].first), sp[i].second));
+    }
+}
+
 #else // TEST_Word_cc
 
 #include <cassert>

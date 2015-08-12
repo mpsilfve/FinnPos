@@ -198,6 +198,9 @@ StringPair get_minimal_suffix_edit(const std::string &word1,
       ++start;
     }
 
+  //  if (start > 0)
+  //    { --start; }
+
   return StringPair(suffix(word1, start),
 		    suffix(word2, start));
 }
@@ -302,7 +305,8 @@ void LemmaExtractor::extract_classes(const Data &data,
 	  static_cast<void>(get_class_number(word.get_word_form(),
 					     word.get_lemma()));
 	  
-	  lemma_lexicon[word.get_word_form() + "<W+LA>" + e.get_label_string(word.get_label())] = word.get_lemma();	  
+	  lemma_lexicon[word.get_word_form() + "<W+LA>" + e.get_label_string(word.get_label())] = word.get_lemma();
+
 	  word_form_dict[word.get_word_form()] = 1;
 	}
     }
@@ -368,27 +372,60 @@ std::string get_main_label(const std::string &label)
     { return label.substr(0, label.find('|')); }
 }
 
-Word * LemmaExtractor::extract_feats(const std::string &word_form, 
-				     const std::string &label)
+std::string get_feats(const std::string &label)
 {
+  if (label.find('|') == std::string::npos)
+    { return label; }
+  else
+    { return label.substr(label.find('|')); }
+}
+
+Word * LemmaExtractor::extract_feats(const std::string &word_form, 
+				     const std::string &label,
+				     bool use_label)
+{
+  std::string word = lowercase(word_form);
+
   FeatureTemplateVector feats;
   
-  feats.push_back( get_feat_id("WORD=" + word_form) );
+  feats.push_back( get_feat_id("WORD=" + /*word_form*/word) );
 
-  std::string padded_word_form = PADDING + word_form;
+  std::string padded_word_form = PADDING + /*word_form*/word;
 
   std::string main_label = get_main_label(label);
 
-  for (unsigned int i = padded_word_form.size() - 10; 
+  for (unsigned int i = padded_word_form.size() - 7; 
        i <= padded_word_form.size();
        ++i)
     {
       feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i)) );
-      feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i) + " LABEL=" + label) );
-      feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i) + " MAIN_LABEL=" + main_label) );
+      //      feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i) + " LABEL=" + label) );
+      //      feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i) + " MAIN_LABEL=" + main_label) );
     }
-  feats.push_back( get_feat_id("LABEL=" + label) );  
-  feats.push_back( get_feat_id("MAIN_LABEL=" + get_main_label(label)) );
+
+  //  padded_word_form = /*word_form*/word + PADDING;
+  for (unsigned int i = 1;
+       i <= 5;
+       ++i)
+    {
+      if (i > padded_word_form.size() - 1)
+	{ break; }
+
+      feats.push_back( get_feat_id("PREFIX=" + padded_word_form.substr(0,i)));
+      //      feats.push_back( get_feat_id("PREFIX=" + padded_word_form.substr(0,i) + " LABEL=" + label) );
+      //      feats.push_back( get_feat_id("PREFIX=" + padded_word_form.substr(0,i) + " MAIN_LABEL=" + main_label) );
+    }
+  
+  feats.push_back(get_feat_id("INFIX4=" + padded_word_form.substr(0, padded_word_form.size() - 2).substr(padded_word_form.size() - 4)));
+  feats.push_back(get_feat_id("INFIX5=" + padded_word_form.substr(0, padded_word_form.size() - 3).substr(padded_word_form.size() - 5)));
+  feats.push_back(get_feat_id("INFIX6=" + padded_word_form.substr(0, padded_word_form.size() - 4).substr(padded_word_form.size() - 6)));
+
+  if (use_label)
+    {
+      feats.push_back( get_feat_id("LABEL=" + label) );  
+      feats.push_back( get_feat_id("MFEATS=" + get_feats(label)) );  
+      //feats.push_back( get_feat_id("MAIN_LABEL=" + get_main_label(label)) );
+    }
 
   if (has_upper(word_form))
     { feats.push_back( get_feat_id("UC") ); }
@@ -485,6 +522,12 @@ std::string LemmaExtractor::get_lemma_candidate(const std::string &word_form,
 						const std::string &label)
 {
   std::string lexicon_entry = word_form + "<W+LA>" + label;
+
+  if (lemma_lexicon.count(lexicon_entry) != 0)
+    { return lemma_lexicon[lexicon_entry]; }
+
+  // FIXME
+  lexicon_entry = word_form + "<W>";
 
   if (lemma_lexicon.count(lexicon_entry) != 0)
     { return lemma_lexicon[lexicon_entry]; }
