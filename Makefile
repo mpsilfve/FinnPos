@@ -60,7 +60,8 @@ ftb-omorfi-tagger-lre:finnpos
 	echo >> $(LOGF)
 	echo Tagging >> $(LOGF)
 	cat data/ftb/ftb.omorfi.test.feats.in | \
-        (time bin/finnpos-label experiments/ftb_omorfi_model/ftb.omorfi.model) > ftb.omorfi.test.sys \
+        (time bin/finnpos-label experiments/ftb_omorfi_model/ftb.omorfi.model) |\
+	python3 bin/finnpos-restore-lemma.py > ftb.omorfi.test.sys \
 	2>> $(LOGF)
 	bin/finnpos-eval data/ftb/ftb.omorfi.test.feats ftb.omorfi.test.sys \
 	experiments/ftb_omorfi_model/ftb.omorfi.model &>> $(LOGF)
@@ -95,7 +96,8 @@ tdt-omorfi-tagger-lre:finnpos
 	echo >> $(LOGF)
 	echo Tagging >> $(LOGF)
 	cat data/tdt/tdt.omorfi.test.feats.in | \
-        (time bin/finnpos-label experiments/tdt_omorfi_model/tdt.omorfi.model) > tdt.omorfi.test.sys \
+        (time bin/finnpos-label experiments/tdt_omorfi_model/tdt.omorfi.model)  |\
+	python3 bin/finnpos-restore-lemma.py > tdt.omorfi.test.sys \
 	2>> $(LOGF)
 	bin/finnpos-eval data/tdt/tdt.omorfi.test.feats tdt.omorfi.test.sys \
 	experiments/tdt_omorfi_model/tdt.omorfi.model &>> $(LOGF)
