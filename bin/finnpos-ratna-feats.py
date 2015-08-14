@@ -105,8 +105,12 @@ def main(pname, iname, ifile, oname, ofile, olog, freq_words):
                 features = feats.split(' ')
         
             if not ann in ['_', '']:
+                lemma_list = ann
+                if ' ' in ann:
+                    lemma_list = ann[:ann.find(' ')]
+                
                 label_feats = [ "FEAT:" + label for label in 
-                                map(lambda x: x[0], eval(ann)) ]
+                                map(lambda x: x[0], eval(lemma_list)) ]
                 features += label_feats
 
             features.append('PPWORD=' + get_wf(i - 2, sentence))
