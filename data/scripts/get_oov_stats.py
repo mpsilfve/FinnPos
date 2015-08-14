@@ -55,7 +55,7 @@ def print_counts(sorted_all_counts, oov_counts):
     for i, l_et_c in enumerate(sorted_all_counts):
         label, count = l_et_c
         oov_count = oov_counts[label]
-        line = "%s & %u & %.2f & %u & %.2f" % (
+        line = "%s & %u & %.1f & %u & %.1f" % (
             fix_casing(label),
             count, 
             count * 100.0 / total_all,
