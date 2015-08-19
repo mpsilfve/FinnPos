@@ -297,8 +297,8 @@ void PerceptronTrainer::update(const Sentence &gold_s,
 {
   ++iter;
 
-  //float max_violation = 0;
-  unsigned int max_violation_id = 0;
+  //  float max_violation = 0;
+  //unsigned int max_violation_id = 0;
   
   float sys_score = 0;
   float gold_score = 0;
@@ -320,11 +320,11 @@ void PerceptronTrainer::update(const Sentence &gold_s,
       gold_score += pos_params.get_all_unstruct(gold_s.at(i), gold_label, STRUCT_SL);
       gold_score += pos_params.get_all_struct_fw(ppgold_label, pgold_label, gold_label, STRUCT_SL);
 
-
+      /*
       if (sys_score >= gold_score)
 	{
 	  max_violation_id = i;
-	}
+	  }*/
     }
 
   for (unsigned int i = 0; i /*<= max_violation_id*/ < sys_s.size() ; ++i)
