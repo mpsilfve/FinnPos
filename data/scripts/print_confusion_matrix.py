@@ -5,23 +5,23 @@ from collections import defaultdict
 import operator
 
 def fix_casing(label):
+    if label == 'OTHER':
+        return label
+
     label = label.lower()
 
     return label[0].upper() + label[1:]
 
-def print_err_mat(err_mat, sorted_errs):
-    total_errors = sum([x[1] for x in sorted_errs]) * 1.0
-
+def print_err_mat(err_mat, sorted_errs, total_errors):
     print('\\begin{table}[!h]')
     print('\\begin{center}')
-    print('\\begin{tabular}{l|%s}' % ('c' * 5)) 
+    print('\\begin{tabular}{l|%s}' % ('c' * len(sorted_errs))) 
 
     stdout.write(' & ')
     for i, l_et_c in enumerate(sorted_errs):        
         gold_label, _count = l_et_c
-        if i == 4:
+        if i + 1 == len(sorted_errs):
             stdout.write(fix_casing(gold_label) + '\\\\\n')
-            break
         else:
             stdout.write(fix_casing(gold_label) + ' & ')
 
@@ -29,16 +29,13 @@ def print_err_mat(err_mat, sorted_errs):
     print('\\noalign{\smallskip}')
     row_count = 0
     for gold_label, _gold_count in sorted_errs:
-        if row_count == 5:
-            break
         stdout.write('%s & ' % (fix_casing(gold_label)))
         for i, l_et_c in enumerate(sorted_errs):
             sys_label, _sys_count = l_et_c
             cell = '%.1f' % (err_mat[gold_label][sys_label] 
                              * 100.0 / total_errors)
-            if i == 4:
+            if i + 1 == len(sorted_errs):
                 stdout.write(cell + '\\\\\n')
-                break
             else:
                 stdout.write(cell + ' & ')
         row_count += 1
@@ -108,7 +105,7 @@ if __name__=='__main__':
         exit(1)
 
     ftb_sys_labels  = get_labels(open(argv[1]))
-    ftb_gold_labels = get_labels(open(argv[2]))
+    ftb_gold_labels = get_labels(open(argv[2]))    
     tdt_sys_labels  = get_labels(open(argv[3]))
     tdt_gold_labels = get_labels(open(argv[4]))
 
@@ -117,8 +114,6 @@ if __name__=='__main__':
 
     ftb_errs = defaultdict(lambda : 0.0)
     tdt_errs = defaultdict(lambda : 0.0)
-    ftb_err_mat = defaultdict(lambda : defaultdict(lambda : 0.0))
-    tdt_err_mat = defaultdict(lambda : defaultdict(lambda : 0.0))
 
     tot = len(ftb_sys_labels)
     corr = 0.0
@@ -127,11 +122,9 @@ if __name__=='__main__':
         gold_label = ftb_gold_labels[i]
 
         if sys_label != gold_label:
-            mpos_sys = get_main_pos(sys_label, 0)
             mpos_gold = get_main_pos(gold_label, 0)
 
             ftb_errs[mpos_gold] += 1
-            ftb_err_mat[mpos_gold][mpos_sys] += 1
         else:
             corr += 1
 
@@ -144,11 +137,9 @@ if __name__=='__main__':
         gold_label = tdt_gold_labels[i]
 
         if sys_label != gold_label:
-            mpos_sys = get_main_pos(sys_label, 1)
             mpos_gold = get_main_pos(gold_label, 1)
 
             tdt_errs[mpos_gold] += 1
-            tdt_err_mat[mpos_gold][mpos_sys] += 1
         else:
             corr += 1
 
@@ -163,12 +154,53 @@ if __name__=='__main__':
                              key=operator.itemgetter(1))
     sorted_tdt_errs.reverse()
 
+    ftb_err_mat = defaultdict(lambda : defaultdict(lambda : 0.0))
+    tdt_err_mat = defaultdict(lambda : defaultdict(lambda : 0.0))
+
+    top_ftb_labels = [x[0] for x in sorted_ftb_errs[:5]]
+    top_tdt_labels = [x[0] for x in sorted_tdt_errs[:5]]
+    
+    for i, sys_label in enumerate(ftb_sys_labels):
+        gold_label = ftb_gold_labels[i]
+
+        if sys_label != gold_label:
+            mpos_gold = get_main_pos(gold_label, 0)
+            mpos_sys = get_main_pos(sys_label, 0)
+            
+            if not mpos_sys in top_ftb_labels:
+                mpos_sys = 'OTHER'
+            if not mpos_gold in top_ftb_labels:
+                mpos_gold = 'OTHER'
+
+            ftb_err_mat[mpos_gold][mpos_sys] += 1
+
+    for i, sys_label in enumerate(tdt_sys_labels):
+        gold_label = tdt_gold_labels[i]
+
+        if sys_label != gold_label:
+            mpos_gold = get_main_pos(gold_label, 1)
+            mpos_sys = get_main_pos(sys_label, 1)
+            
+            if not mpos_sys in top_tdt_labels:
+                mpos_sys = 'OTHER'
+            if not mpos_gold in top_tdt_labels:
+                mpos_gold = 'OTHER'
+
+            tdt_err_mat[mpos_gold][mpos_sys] += 1
+
     print_tabular_errs(sorted_tdt_errs)
     print()
     print_tabular_errs(sorted_ftb_errs)
     print()
-    print_err_mat(tdt_err_mat, sorted_tdt_errs)
+
+    ftb_total_errs = sum([x[1] for x in sorted_ftb_errs])
+    tdt_total_errs = sum([x[1] for x in sorted_tdt_errs])
+
+    sorted_ftb_errs = sorted_ftb_errs[:5] + [('OTHER', 0)]
+    sorted_tdt_errs = sorted_tdt_errs[:5] + [('OTHER', 0)]
+
+    print_err_mat(tdt_err_mat, sorted_tdt_errs, tdt_total_errs)
     print()
-    print_err_mat(ftb_err_mat, sorted_ftb_errs)
+    print_err_mat(ftb_err_mat, sorted_ftb_errs, ftb_total_errs)
 
 
