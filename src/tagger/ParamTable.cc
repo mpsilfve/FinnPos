@@ -456,13 +456,13 @@ int main(void)
   pt.update_unstruct(pt.get_feat_template("FOO"), 0, 1);
   assert(pt.get_unstruct(pt.get_feat_template("FOO"), 0) == 2);
 
-  assert(pt.get_struct1(0) == 0);
-  pt.update_struct1(0, 1);
-  assert(pt.get_struct1(0) == 1);
+  assert(pt.get_struct1(0, false) == 0);
+  pt.update_struct1(0, 1, false);
+  assert(pt.get_struct1(0, false) == 1);
 
-  assert(pt.get_struct1(1) == 0);
-  pt.update_struct1(1, 2);
-  assert(pt.get_struct1(1) == 2);
+  assert(pt.get_struct1(1, false) == 0);
+  pt.update_struct1(1, 2, false);
+  assert(pt.get_struct1(1, false) == 2);
 
   assert(pt.get_struct2(0, 0, false) == 0);
   pt.update_struct2(0, 0, 1, false);

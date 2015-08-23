@@ -598,8 +598,8 @@ int main(void)
   m3.clear();
   m3[0].first = 0;
   m3[0].second = 1;
-  m3[100].first = 5.1;
-  m3[100].second = 16;
+  m3[100].first = 5;
+  m3[100].second = 16.1;
   write_map<int, int, float>(map_out_8, m3);
   m_copy3.clear();
   std::istringstream map_in_8(map_out_8.str());

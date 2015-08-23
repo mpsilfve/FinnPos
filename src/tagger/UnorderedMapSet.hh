@@ -1,17 +1,33 @@
 #ifndef HEADER_UnorderedMapSet_hh
 #define HEADER_UnorderedMapSet_hh
 
-#include <tr1/unordered_map>
-#include <tr1/unordered_set>
-
 // Ugly gum to make unordered_map and unordered_set work the same on
 // all platforms.
+
+#if __cplusplus >= 201103L
+
+#include <unordered_map>
+#include <unordered_set>
+
+namespace std
+{
+  using std::unordered_map;
+  using std::unordered_set;
+}
+
+#else
+
+#include <tr1/unordered_map>
+#include <tr1/unordered_set>
 
 namespace std
 {
   using std::tr1::unordered_map;
   using std::tr1::unordered_set;
 }
+
+#endif  // if __cplusplus >= 201103L
+
 
 template<class T, class U> bool operator!=(const std::unordered_map<T,U> &m1,
 					   const std::unordered_map<T,U> &m2);

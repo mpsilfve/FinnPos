@@ -258,7 +258,7 @@ public:
 
   void set_label_candidates(const std::string &word_form, 
 			    bool use_lexicon,
-			    float mass, 
+			    float count,
 			    LabelVector &target) const
   {
     static_cast<void>(word_form);

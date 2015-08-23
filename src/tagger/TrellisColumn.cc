@@ -487,12 +487,12 @@ int main(void)
   col2.set_ncol(&rbcol1);
   rbcol1.set_ncol(&rbcol2);
   
-  lbcol.set_word(boundary);
-  col0.set_word(dog);
-  col1.set_word(cat);
-  col2.set_word(horse);
-  rbcol1.set_word(boundary);
-  rbcol2.set_word(boundary);
+  lbcol.set_word(boundary, 0);
+  col0.set_word(dog, 0);
+  col1.set_word(cat, 0);
+  col2.set_word(horse, 0);
+  rbcol1.set_word(boundary, 0);
+  rbcol2.set_word(boundary, 0);
 
   ParamTable pt;
   
@@ -656,12 +656,12 @@ int main(void)
   foo_col4.set_ncol(&foo_col5);
   foo_col5.set_ncol(&foo_col6);
 
-  foo_col1.set_word(boundary);
-  foo_col2.set_word(foo);
-  foo_col3.set_word(foo);
-  foo_col4.set_word(foo);
-  foo_col5.set_word(boundary);
-  foo_col6.set_word(boundary);
+  foo_col1.set_word(boundary, 0);
+  foo_col2.set_word(foo, 0);
+  foo_col3.set_word(foo, 0);
+  foo_col4.set_word(foo, 0);
+  foo_col5.set_word(boundary, 0);
+  foo_col6.set_word(boundary, 0);
 
   foo_col6.compute_viterbi(foo_pt);
   assert(float_equals(foo_col6.get_viterbi(0,0), 1000 - 2));
@@ -679,12 +679,12 @@ int main(void)
   bar_col4.set_ncol(&bar_col5);
   bar_col5.set_ncol(&bar_col6);
 
-  bar_col1.set_word(boundary);
-  bar_col2.set_word(foo);
-  bar_col3.set_word(foo);
-  bar_col4.set_word(foo);
-  bar_col5.set_word(boundary);
-  bar_col6.set_word(boundary);
+  bar_col1.set_word(boundary, 0);
+  bar_col2.set_word(foo, 0);
+  bar_col3.set_word(foo, 0);
+  bar_col4.set_word(foo, 0);
+  bar_col5.set_word(boundary, 0);
+  bar_col6.set_word(boundary, 0);
 
   bar_col6.compute_viterbi(foo_pt);
   assert(float_equals(bar_col6.get_viterbi(0,0), 1000 - 2));
@@ -702,12 +702,12 @@ int main(void)
   baz_col4.set_ncol(&baz_col5);
   baz_col5.set_ncol(&baz_col6);
 
-  baz_col1.set_word(boundary);
-  baz_col2.set_word(foo);
-  baz_col3.set_word(foo);
-  baz_col4.set_word(foo);
-  baz_col5.set_word(boundary);
-  baz_col6.set_word(boundary);
+  baz_col1.set_word(boundary, 0);
+  baz_col2.set_word(foo, 0);
+  baz_col3.set_word(foo, 0);
+  baz_col4.set_word(foo, 0);
+  baz_col5.set_word(boundary, 0);
+  baz_col6.set_word(boundary, 0);
 
   baz_col6.compute_viterbi(foo_pt);
  
