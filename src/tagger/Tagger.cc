@@ -335,6 +335,9 @@ Data Tagger::get_data(const std::string &filename, bool tagged)
 	      tagger_options.degree);
 }
 
+void Tagger::print_params(std::ostream &out) const
+{ out << param_table; }
+
 #else // TEST_Tagger_cc
 #include <sstream>
 #include <cassert>

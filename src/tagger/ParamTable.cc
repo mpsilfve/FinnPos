@@ -119,6 +119,57 @@ long ParamTable::get_struct_param_id(unsigned int pplabel,
     label;
 }
 
+std::string ParamTable::get_unstruct_feat_repr(long feat_id,
+					       const InvFeatureTemplateMap &m)
+  const
+{
+  long label = feat_id % (MAX_LABEL + 1);
+  long feat_template = (feat_id - label) / (MAX_LABEL + 1);
+  std::string label_string = label_extractor->get_label_string(label);
+  std::string feat_template_string = m[feat_template];
+
+  return feat_template_string + " " + label_string;
+}
+
+std::string ParamTable::get_struct_feat_repr(long feat_id) const
+{
+  if (feat_id >= 
+      (MAX_LABEL + 1) * (MAX_LABEL + 1) * (MAX_LABEL + 1) +
+      (MAX_LABEL + 1) * (MAX_LABEL + 1))
+    {
+      feat_id -= 
+	(MAX_LABEL + 1) * (MAX_LABEL + 1) * (MAX_LABEL + 1) +
+	(MAX_LABEL + 1) * (MAX_LABEL + 1);
+
+      return label_extractor->get_label_string(feat_id);
+    }
+  else if (feat_id >= (MAX_LABEL + 1) * (MAX_LABEL + 1) * (MAX_LABEL + 1))
+    {
+      feat_id -= (MAX_LABEL + 1) * (MAX_LABEL + 1) * (MAX_LABEL + 1);
+      long label1 = feat_id % (MAX_LABEL + 1);
+      feat_id -= label1;
+      long label2 = feat_id / (MAX_LABEL + 1);
+      
+      return label_extractor->get_label_string(label1) + " " +
+	label_extractor->get_label_string(label2);
+    }
+  else
+    {
+      long label1 = feat_id % (MAX_LABEL + 1);
+      feat_id -= label1;
+      feat_id /= (MAX_LABEL + 1);
+
+      long label2 = feat_id % (MAX_LABEL + 1);
+      feat_id -= label2;
+      
+      long label3 = feat_id / (MAX_LABEL + 1);
+
+      return label_extractor->get_label_string(label1) + " " +
+	label_extractor->get_label_string(label2) + " " + 
+	label_extractor->get_label_string(label3);
+    }
+}
+
 float ParamTable::get_unstruct(unsigned int feature_template, 
 			       unsigned int label) const
 {
@@ -423,14 +474,56 @@ bool ParamTable::operator==(const ParamTable &another) const
      struct_param_table == another.struct_param_table);
 }
 
+std::ostream &operator<<(std::ostream &out, const ParamTable &table)
+{
+  ParamTable::InvFeatureTemplateMap 
+    m(table.feature_template_map.size());
+
+  for (ParamTable::FeatureTemplateMap::const_iterator it = 
+	 table.feature_template_map.begin();
+       it != table.feature_template_map.end();
+       ++it)
+    { m[it->second] = it->first; }
+
+  out << "UNSTRUCTURED FEATURES" << std::endl;
+
+  for (ParamMap::const_iterator it = 
+	 table.unstruct_param_table.begin();
+       it != table.unstruct_param_table.end();
+       ++it)
+    {
+      std::string feat_str = table.get_unstruct_feat_repr(it->first, m);
+      out << feat_str << ' ' << it->second << std::endl;
+    }
+
+  out << "STRUCTURED FEATURES" << std::endl;
+
+  for (ParamMap::const_iterator it = 
+	 table.struct_param_table.begin();
+       it != table.struct_param_table.end();
+       ++it)
+    {
+      std::string feat_str = table.get_struct_feat_repr(it->first);
+      out << feat_str << ' ' << it->second << std::endl;
+    }
+
+  return out;
+}
+
 #else // TEST_ParamTable_cc
 
 #include <sstream>
 #include <cassert>
 
+#include "LabelExtractor.hh"
+
 int main(void)
 {
   ParamTable pt;
+
+  LabelExtractor le;
+  static_cast<void>(le.get_label("a"));
+  pt.set_label_extractor(le);
 
   unsigned int label_foo = pt.get_feat_template("FOO");
   unsigned int label_bar = pt.get_feat_template("BAR");
@@ -456,13 +549,13 @@ int main(void)
   pt.update_unstruct(pt.get_feat_template("FOO"), 0, 1);
   assert(pt.get_unstruct(pt.get_feat_template("FOO"), 0) == 2);
 
-  assert(pt.get_struct1(0) == 0);
-  pt.update_struct1(0, 1);
-  assert(pt.get_struct1(0) == 1);
+  assert(pt.get_struct1(0,0) == 0);
+  pt.update_struct1(0, 1,0);
+  assert(pt.get_struct1(0, 0) == 1);
 
-  assert(pt.get_struct1(1) == 0);
-  pt.update_struct1(1, 2);
-  assert(pt.get_struct1(1) == 2);
+  assert(pt.get_struct1(1,0) == 0);
+  pt.update_struct1(1, 2,0);
+  assert(pt.get_struct1(1,0) == 2);
 
   assert(pt.get_struct2(0, 0, false) == 0);
   pt.update_struct2(0, 0, 1, false);
@@ -485,7 +578,10 @@ int main(void)
   std::istringstream pt_in(pt_out.str());
   ParamTable pt_copy;
   pt_copy.load(pt_in, false);
+  pt_copy.set_label_extractor(le);
   assert(pt_copy == pt);
+
+  std::cout << pt << std::endl;
 }
 
 #endif // TEST_ParamTable_cc

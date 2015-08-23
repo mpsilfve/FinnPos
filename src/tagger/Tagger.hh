@@ -62,6 +62,9 @@ public:
   Data get_data(const std::string &filename, bool tagged);
 
   void p(void) const;
+
+  void print_params(std::ostream &out) const;
+
 private:
   unsigned int line_counter;
 

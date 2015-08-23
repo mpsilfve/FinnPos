@@ -83,9 +83,10 @@ public:
   void next(void);
 
   void p(void) const;
-
+  
 private:
   typedef std::unordered_map<std::string, unsigned int> FeatureTemplateMap;
+  typedef std::vector<std::string> InvFeatureTemplateMap;
 
   const LabelExtractor * label_extractor;
   bool trained;
@@ -97,6 +98,14 @@ private:
   long get_struct_param_id(unsigned int label) const;
   long get_struct_param_id(unsigned int plabel, unsigned int label) const;
   long get_struct_param_id(unsigned int pplabel, unsigned int plabel, unsigned int label) const;
+
+  std::string get_unstruct_feat_repr(long feat_id,
+				     const InvFeatureTemplateMap & m) const;
+  std::string get_struct_feat_repr(long feat_id) const;
+
+  friend std::ostream &operator<<(std::ostream &out, const ParamTable &table);
 };
+
+std::ostream &operator<<(std::ostream &out, const ParamTable &table);
 
 #endif // HEADER_ParamTable_hh
