@@ -7,7 +7,7 @@ TrellisCell Tagger TaggerOptions SuffixLabelMap process_aux
 
 TESTS=$(MODULES:%=TEST_%)
 OBJS=$(MODULES:%=%.o)
-PROGS=finnpos-train finnpos-label finnpos-eval
+PROGS=finnpos-train finnpos-label finnpos-eval finnpos-print-params
 
 all:$(PROGS)
 
@@ -40,3 +40,4 @@ TEST_%:$(OBJS) %.cc
 finnpos-train:finnpos-train.cc $(OBJS)
 finnpos-label:finnpos-label.cc $(OBJS)
 finnpos-eval:finnpos-eval.cc $(OBJS)
+finnpos-print-params:finnpos-print-params.cc $(OBJS)
