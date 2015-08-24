@@ -32,6 +32,7 @@ std::string get_suffix(const std::string &wf, unsigned int length);
 
 #define PADDING "^^^^^^^^^^" 
 #define PADDING_LEN 10 
+#define MAX_GUESSES 50
 
 LabelExtractor::LabelExtractor(unsigned int max_suffix_len):
   max_suffix_len(max_suffix_len)
@@ -252,6 +253,11 @@ void LabelExtractor::set_label_candidates(const std::string &word_form,
       label_set.insert(it->second.begin(), it->second.end());
       target.clear();
       target.assign(label_set.begin(), label_set.end());
+    }
+
+  if (target.size() > MAX_GUESSES)
+    {
+      target.erase(target.begin() + MAX_GUESSES, target.end()); 
     }
 }
 
