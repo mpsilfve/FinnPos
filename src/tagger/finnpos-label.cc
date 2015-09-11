@@ -29,6 +29,8 @@
 
 int main(int argc, char * argv[])
 {
+  std::ios_base::sync_with_stdio(false);
+
   if (argc != 2)
     {
       std::cerr <<  "USAGE: " << argv[0] << " model_file"
