@@ -395,25 +395,31 @@ void runTransducer (genericTransducer T)
       int i = 0;
       SymbolNumber k = NO_SYMBOL_NUMBER;
       bool failed = false;
-      for ( char ** Str = &str; **Str != 0; )
+      if (strlen(str) < MAX_ANALYZE_LEN)
 	{
-	  k = T.find_next_key(Str);
-#if OL_FULL_DEBUG
-	  std::cout << "INPUT STRING ENTRY " << i << " IS " << k << std::endl;
-#endif
-	  if (k == NO_SYMBOL_NUMBER)
+	  for ( char ** Str = &str; **Str != 0; )
 	    {
-	      if (echoInputsFlag)
+	      k = T.find_next_key(Str);
+#if OL_FULL_DEBUG
+	      std::cout << "INPUT STRING ENTRY " << i << " IS " << k << std::endl;
+#endif
+	      if (k == NO_SYMBOL_NUMBER)
 		{
-		  std::cout << std::endl;
+		  if (echoInputsFlag)
+		    {
+		      std::cout << std::endl;
+		    }
+		  failed = true;
+		  break;
 		}
-	      failed = true;
-	      break;
+	      input_string[i] = k;
+	      ++i;
 	    }
-	  input_string[i] = k;
-	  ++i;
+	  str = old_str;
 	}
-      str = old_str;
+      else
+	{ failed = true; }
+
       if (failed)
       	{ // tokenization failed
 	  if (outputType == xerox)

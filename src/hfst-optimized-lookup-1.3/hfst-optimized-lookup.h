@@ -52,6 +52,9 @@ bool preserveDiacriticRepresentationsFlag = false;
 
 #define MAX_IO_STRING 5000
 
+// Do not analyze strings of length >= MAX_ANALYZE_LEN.
+#define MAX_ANALYZE_LEN 70
+
 // the following flags are only meaningful with certain debugging #defines
 bool timingFlag = false;
 bool printDebuggingInformationFlag = false;
