@@ -56,6 +56,7 @@ const char * beam_mass_id = "beam_mass=";
 const char * regularization_id = "regularization=";
 const char * delta_id = "delta=";
 const char * sigma_id = "sigma=";
+const char * use_label_dictionary_id = "use_label_dictionary=";
 
 std::string despace(const std::string &line)
 {
@@ -85,7 +86,8 @@ TaggerOptions::TaggerOptions(Estimator estimator,
 			     float beam_mass,
 			     Regularization regularization,
 			     float delta,
-			     float sigma):
+			     float sigma,
+			     bool use_label_dictionary):
   estimator(estimator),
   inference(inference),
   suffix_length(suffix_length),
@@ -98,7 +100,8 @@ TaggerOptions::TaggerOptions(Estimator estimator,
   beam_mass(beam_mass),
   regularization(regularization),
   delta(delta),
-  sigma(sigma)
+  sigma(sigma),
+  use_label_dictionary(use_label_dictionary)
 {
 }
 
@@ -115,7 +118,8 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
   beam_mass(-1),
   regularization(NONE),
   delta(-1),
-  sigma(-1)
+  sigma(-1),
+  use_label_dictionary(1)
 {
   while (in)
     {
@@ -159,6 +163,8 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
 	{ delta = get_float(strip(line, delta_id)); }
       else if (line.find(sigma_id) != std::string::npos)
 	{ sigma = get_float(strip(line, sigma_id)); }
+      else if (line.find(use_label_dictionary_id) != std::string::npos)
+	{ use_label_dictionary = get_uint(strip(line, use_label_dictionary_id)); }
       else
 	{ throw SyntaxError(); }
     }
@@ -182,6 +188,7 @@ void TaggerOptions::store(std::ostream &out) const
   field_names.push_back("regularization");
   field_names.push_back("delta");
   field_names.push_back("sigma");
+  field_names.push_back("use_label_dictionary");
 
   fields.push_back(estimator);
   fields.push_back(inference);
@@ -196,6 +203,7 @@ void TaggerOptions::store(std::ostream &out) const
   fields.push_back(regularization);
   fields.push_back(delta);
   fields.push_back(sigma);
+  fields.push_back(use_label_dictionary);
   
   write_vector(out, field_names);
   write_vector(out, fields);
@@ -245,6 +253,8 @@ void TaggerOptions::load(std::istream &in, std::ostream &msg_out, bool reverse_b
 	{ delta = static_cast<float>(fields[i]); }
       else if (field_names[i] == "sigma")
 	{ sigma = static_cast<float>(fields[i]); }
+      else if (field_names[i] == "use_label_dictionary")
+	{ use_label_dictionary = static_cast<unsigned int>(fields[i]); }
       else
 	{
 	  msg_out << "Found unknown parameter name " 
@@ -340,7 +350,8 @@ bool TaggerOptions::operator==(const TaggerOptions &another) const
      float_eq(beam_mass,another.beam_mass)     and
      regularization == another.regularization     and
      float_eq(delta, another.delta)                       and
-     float_eq(sigma, another.sigma));
+     float_eq(sigma, another.sigma) and
+     use_label_dictionary == another.use_label_dictionary);
 }
 
 #else // TEST_TaggerOptions_cc
@@ -369,10 +380,11 @@ int main(void)
 	 empty_options.max_lemmatizer_passes == 50  &&
 	 empty_options.max_useless_passes == 3 &&
 	 float_eq(empty_options.guess_mass, 0.99)        &&
-	 empty_options.beam == static_cast<unsigned int>(-1)              &&
+	 empty_options.beam == -1              &&
 	 empty_options.regularization == NONE  &&
 	 empty_options.delta == -1             &&
-	 empty_options.sigma == -1);
+	 empty_options.sigma == -1 &&
+	 empty_options.use_label_dictionary == 1);
 
   counter = 0;
 
@@ -389,7 +401,8 @@ int main(void)
     "suffix_length =8\n"
     "inference =MARGINAL\n"
     "estimator=ML\n"
-    "beam_mass=6"
+    "beam_mass=6\n"
+    "use_label_dictionary=0"
     ;
 
   std::istringstream opt_file(opt_str);
@@ -408,6 +421,7 @@ int main(void)
   assert(options.delta == 2);
   assert(options.sigma == 1);
   assert(options.beam_mass == 6);
+  assert(options.use_label_dictionary == 0);
   counter = 0;
 
   try

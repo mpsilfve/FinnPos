@@ -48,6 +48,7 @@ struct TaggerOptions
   Regularization regularization;
   float delta;
   float sigma;
+  bool use_label_dictionary;
 
   TaggerOptions(void);
 
@@ -63,7 +64,8 @@ struct TaggerOptions
 		float beam_mass,
 		Regularization regularization = NONE,
 		float delta = -1,
-		float sigma = -1);
+		float sigma = -1,
+		bool use_label_dictionary = 1);
   
   TaggerOptions(std::istream &in, unsigned int &counter);
 
