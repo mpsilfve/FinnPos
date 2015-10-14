@@ -226,7 +226,6 @@ void LabelExtractor::set_label_candidates(const std::string &word_form,
 
   if (use_lexicon and lexicon.count(word_form) != 0)
     {
-      //std::unordered_set<unsigned int> label_set(target.begin(), target.end());
       target.clear();
       std::unordered_set<unsigned int> label_set;
       SubstringLabelMap::const_iterator it = lexicon.find(word_form);
@@ -236,6 +235,9 @@ void LabelExtractor::set_label_candidates(const std::string &word_form,
     }
 
   if (use_lexicon and not target.empty())
+    { return; }
+
+  if (mass == 0 and not target.empty())
     { return; }
 
   int wf_len = 
