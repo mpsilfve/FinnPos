@@ -65,6 +65,8 @@ public:
 
   void print_params(std::ostream &out) const;
 
+  void set_options(const TaggerOptions &tagger_options);
+
 private:
   unsigned int line_counter;
 
