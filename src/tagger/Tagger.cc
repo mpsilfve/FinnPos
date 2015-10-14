@@ -233,7 +233,9 @@ void Tagger::label_stream(std::istream &in)
       if (s.size() == 0)
 	{ continue; }
 
-      s.set_label_guesses(label_extractor, 1, tagger_options.guess_mass);
+      s.set_label_guesses(label_extractor, 
+			  tagger_options.use_label_dictionary, 
+			  tagger_options.guess_mass);
 
       Trellis trellis(s, label_extractor.get_boundary_label(), 
 		      tagger_options.beam);
@@ -368,7 +370,7 @@ int main(void)
   
   std::istringstream dev_in(dev_contents);
 
-  TaggerOptions tagger_options(AVG_PERC, MAP, 10, 2, 20, 3, 20, -1, -1, NONE, 0, 0);
+  TaggerOptions tagger_options(AVG_PERC, MAP, 10, 2, 20, 3, 20, -1, -1, -1, NONE, 0, 0, 1);
   std::ostringstream null_stream;
   Tagger tagger(tagger_options, null_stream);
   
