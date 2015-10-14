@@ -84,6 +84,9 @@ Tagger::Tagger(std::istream &tagger_opt_in, std::ostream &msg_out):
   line_counter = 0;
 }
 
+void Tagger::set_options(const TaggerOptions &tagger_options)
+{ this->tagger_options = tagger_options; }
+
 #include <cassert>
 
 void Tagger::train(std::istream &train_in,
