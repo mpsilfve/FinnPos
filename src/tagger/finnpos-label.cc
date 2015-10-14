@@ -31,17 +31,27 @@ int main(int argc, char * argv[])
 {
   std::ios_base::sync_with_stdio(false);
 
-  if (argc != 2)
+  if (argc < 2 or argc > 3)
     {
-      std::cerr <<  "USAGE: " << argv[0] << " model_file"
+      std::cerr <<  "USAGE: " << argv[0] << " (conf_file)? model_file"
 		<< std::endl;
 
       exit(1);
     }
 
-  std::string model_fn = argv[1];  
-  std::ifstream model_in(model_fn.c_str());
+  std::string model_fn;  
+  
+  if (argc == 2)
+    {
+      model_fn = argv[1];  
+    }
+  else
+    {
+      model_fn = argv[2];  
+    }
 
+  std::ifstream model_in(model_fn.c_str());
+      
   if (not check(model_fn, model_in, std::cerr))
     { exit(1); }
 
@@ -49,6 +59,15 @@ int main(int argc, char * argv[])
 
   Tagger tagger(std::cerr);
   tagger.load(model_in);
+
+  if (argc == 3)
+    {
+      std::cerr << argv[0] << ": Reading options." << std::endl;
+      unsigned int counter = 0;
+      std::ifstream opt_in(argv[1]);
+      TaggerOptions tagger_options(opt_in, counter);
+      tagger.set_options(tagger_options);
+    }
 
   std::cerr 
     << argv[0]
