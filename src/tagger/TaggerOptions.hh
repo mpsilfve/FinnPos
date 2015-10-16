@@ -49,6 +49,7 @@ struct TaggerOptions
   float delta;
   float sigma;
   bool use_label_dictionary;
+  int guess_count_limit;
 
   TaggerOptions(void);
 
@@ -65,7 +66,8 @@ struct TaggerOptions
 		Regularization regularization = NONE,
 		float delta = -1,
 		float sigma = -1,
-		bool use_label_dictionary = 1);
+		bool use_label_dictionary = 1,
+		int guess_count_limit = 50);
   
   TaggerOptions(std::istream &in, unsigned int &counter);
 

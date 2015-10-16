@@ -30,6 +30,7 @@
 #include "io.hh"
 #include "exceptions.hh"
 #include "SuffixLabelMap.hh"
+#include "TaggerOptions.hh"
 
 class Data;
 
@@ -37,6 +38,7 @@ class LabelExtractor
 {
  public:
   LabelExtractor(unsigned int max_suffix_len=10);
+  LabelExtractor(const TaggerOptions &tagger_options);
   virtual ~LabelExtractor(void);
 
   virtual void set_label_candidates(const std::string &word_form,
@@ -60,7 +62,7 @@ class LabelExtractor
 
   bool is_oov(const std::string &wf) const;
   bool open_class(unsigned int label) const;
-
+  void set_options(TaggerOptions &tagger_options);
 private:
   typedef std::vector<SuffixLabelMap> SuffixLabelMapVector;
   typedef std::unordered_map<std::string, LabelVector> SubstringLabelMap;
@@ -68,6 +70,7 @@ private:
   typedef std::unordered_map<unsigned int, unsigned int> LabelCountMap;
 
   unsigned int max_suffix_len;
+  int max_guesses;
   std::unordered_map<std::string, unsigned int> label_map;
   StringVector string_map;
   //SubstringLabelMap label_counts;

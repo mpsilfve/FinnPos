@@ -32,10 +32,22 @@ std::string get_suffix(const std::string &wf, unsigned int length);
 
 #define PADDING "^^^^^^^^^^" 
 #define PADDING_LEN 10 
-#define MAX_GUESSES 50
 
 LabelExtractor::LabelExtractor(unsigned int max_suffix_len):
-  max_suffix_len(max_suffix_len)
+  max_suffix_len(max_suffix_len),
+  max_guesses(50)
+{
+  static_cast<void>(get_label("_#_"));
+
+  for (unsigned int i = 0; i < max_suffix_len + 1; ++i)
+    { 
+      label_counts.push_back(i); 
+    }
+}
+
+LabelExtractor::LabelExtractor(const TaggerOptions &tagger_options):
+  max_suffix_len(tagger_options.suffix_length),
+  max_guesses(tagger_options.guess_count_limit)
 {
   static_cast<void>(get_label("_#_"));
 
@@ -257,10 +269,16 @@ void LabelExtractor::set_label_candidates(const std::string &word_form,
       target.assign(label_set.begin(), label_set.end());
     }
 
-  if (target.size() > MAX_GUESSES)
+  if (max_guesses > 0 and static_cast<int>(target.size()) > max_guesses)
     {
-      target.erase(target.begin() + MAX_GUESSES, target.end()); 
+      target.erase(target.begin() + max_guesses, target.end()); 
     }
+}
+
+void LabelExtractor::set_options(TaggerOptions &tagger_options)
+{
+  max_suffix_len = tagger_options.suffix_length;
+  max_guesses = tagger_options.guess_count_limit;
 }
 
 const std::string &LabelExtractor::get_label_string(unsigned int label) const

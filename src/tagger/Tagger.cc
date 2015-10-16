@@ -43,7 +43,7 @@ Tagger::Tagger(const TaggerOptions &tagger_options,
 	       std::ostream &msg_out):
   line_counter(0),
   tagger_options(tagger_options),
-  label_extractor(tagger_options.suffix_length),
+  label_extractor(tagger_options),
   msg_out(msg_out)
 {
   if (tagger_options.estimator == AVG_PERC)
@@ -64,7 +64,7 @@ Tagger::Tagger(const TaggerOptions &tagger_options,
 Tagger::Tagger(std::istream &tagger_opt_in, std::ostream &msg_out):
   line_counter(0),
   tagger_options(tagger_opt_in, line_counter),
-  label_extractor(tagger_options.suffix_length),
+  label_extractor(tagger_options),
   msg_out(msg_out)
 {
   if (tagger_options.estimator == AVG_PERC)
@@ -306,6 +306,7 @@ void Tagger::load(std::istream &in)
 
   tagger_options.load(in, msg_out, reverse_bytes);
   label_extractor.load(in, reverse_bytes);
+  label_extractor.set_options(tagger_options);
   lemma_extractor.load(in, reverse_bytes);
   param_table.load(in, reverse_bytes); 
   param_table.set_label_extractor(label_extractor);
