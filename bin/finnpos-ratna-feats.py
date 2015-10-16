@@ -111,11 +111,16 @@ def main(pname, iname, ifile, oname, ofile, olog, freq_words):
                 
                 label_feats = [ "FEAT:" + label for label in 
                                 map(lambda x: x[0], eval(lemma_list)) ]
-                features += label_feats
+
+                if len(label_feats) != 0:
+                    features += label_feats
+                else:
+                    features.append("NO_LABELS")
 
             features.append('PPWORD=' + get_wf(i - 2, sentence))
             features.append('PWORD='  + get_wf(i - 1, sentence))
             features.append('WORD='   + wf)
+            features.append('WORD_LEN='   + str(len(wf)))
             features.append('NWORD='  + get_wf(i + 1, sentence))
             features.append('NNWORD=' + get_wf(i + 2, sentence))
             
