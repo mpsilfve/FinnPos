@@ -74,11 +74,12 @@ void LemmaExtractor::set_max_passes(size_t max_passes)
 void LemmaExtractor::train(const Data &train_data, 
 			   const Data &dev_data, 
 			   const LabelExtractor &le,
-			   std::ostream &msg_out)
+			   std::ostream &msg_out,
+			   const TaggerOptions &options)
 {
   extract_classes(train_data, le);
 
-  PerceptronTrainer trainer(max_passes, 3, param_table, -1, *this, msg_out);
+  PerceptronTrainer trainer(max_passes, 3, param_table, -1, *this, msg_out, options);
   trainer.train_lemmatizer(train_data, dev_data, *this, le);
 
   param_table.set_label_extractor(dummy_extractor);

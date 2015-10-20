@@ -58,6 +58,8 @@ const char * delta_id = "delta=";
 const char * sigma_id = "sigma=";
 const char * use_label_dictionary_id = "use_label_dictionary=";
 const char * guess_count_limit_id = "guess_count_limit=";
+const char * use_unstructured_sublabels_id = "use_unstructured_sublabels=";
+const char * use_structured_sublabels_id = "use_structured_sublabels=";
 
 std::string despace(const std::string &line)
 {
@@ -89,7 +91,9 @@ TaggerOptions::TaggerOptions(Estimator estimator,
 			     float delta,
 			     float sigma,
 			     bool use_label_dictionary,
-			     int guess_count_limit):
+			     int guess_count_limit,
+			     bool use_unstructured_sublabels,
+			     bool use_structured_sublabels):
   estimator(estimator),
   inference(inference),
   suffix_length(suffix_length),
@@ -104,7 +108,9 @@ TaggerOptions::TaggerOptions(Estimator estimator,
   delta(delta),
   sigma(sigma),
   use_label_dictionary(use_label_dictionary),
-  guess_count_limit(guess_count_limit)
+  guess_count_limit(guess_count_limit),
+  use_unstructured_sublabels(use_unstructured_sublabels),
+  use_structured_sublabels(use_structured_sublabels)
 {
 }
 
@@ -123,7 +129,9 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
   delta(-1),
   sigma(-1),
   use_label_dictionary(1),
-  guess_count_limit(50)
+  guess_count_limit(50),
+  use_unstructured_sublabels(1),
+  use_structured_sublabels(1)
 {
   while (in)
     {
@@ -171,6 +179,10 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
 	{ use_label_dictionary = get_uint(strip(line, use_label_dictionary_id)); }
       else if (line.find(guess_count_limit_id) != std::string::npos)
 	{ guess_count_limit = get_int(strip(line, guess_count_limit_id)); }
+      else if (line.find(use_unstructured_sublabels_id) != std::string::npos)
+	{ use_unstructured_sublabels = get_uint(strip(line, use_unstructured_sublabels_id)); }
+      else if (line.find(use_structured_sublabels_id) != std::string::npos)
+	{ use_structured_sublabels = get_uint(strip(line, use_structured_sublabels_id)); }
       else
 	{ throw SyntaxError(); }
     }
@@ -196,6 +208,8 @@ void TaggerOptions::store(std::ostream &out) const
   field_names.push_back("sigma");
   field_names.push_back("use_label_dictionary");
   field_names.push_back("guess_count_limit");
+  field_names.push_back("use_unstructured_sublabels");
+  field_names.push_back("use_structured_sublabels");
 
   fields.push_back(estimator);
   fields.push_back(inference);
@@ -212,7 +226,9 @@ void TaggerOptions::store(std::ostream &out) const
   fields.push_back(sigma);
   fields.push_back(use_label_dictionary);
   fields.push_back(guess_count_limit);
-  
+  fields.push_back(use_unstructured_sublabels);
+  fields.push_back(use_structured_sublabels);
+
   write_vector(out, field_names);
   write_vector(out, fields);
 }
@@ -265,6 +281,10 @@ void TaggerOptions::load(std::istream &in, std::ostream &msg_out, bool reverse_b
 	{ use_label_dictionary = static_cast<unsigned int>(fields[i]); }
       else if (field_names[i] == "guess_count_limit")
 	{ guess_count_limit = static_cast<int>(fields[i]); }
+      else if (field_names[i] == "use_unstructured_sublabels")
+	{ use_unstructured_sublabels = static_cast<unsigned int>(fields[i]); }
+      else if (field_names[i] == "use_structured_sublabels")
+	{ use_structured_sublabels = static_cast<unsigned int>(fields[i]); }
       else
 	{
 	  msg_out << "Found unknown parameter name " 
@@ -362,6 +382,8 @@ bool TaggerOptions::operator==(const TaggerOptions &another) const
      float_eq(delta, another.delta)                       and
      float_eq(sigma, another.sigma) and
      use_label_dictionary == another.use_label_dictionary and
+     use_unstructured_sublabels == another.use_unstructured_sublabels and
+     use_structured_sublabels == another.use_structured_sublabels and
      guess_count_limit == another.guess_count_limit)
 ;
 }
@@ -397,7 +419,9 @@ int main(void)
 	 empty_options.delta == -1             &&
 	 empty_options.sigma == -1 &&
 	 empty_options.use_label_dictionary == 1 &&
-	 empty_options.guess_count_limit == 50);
+	 empty_options.guess_count_limit == 50 &&
+	 empty_options.use_unstructured_sublabels == 1 &&
+	 empty_options.use_structured_sublabels == 1);
 
   counter = 0;
 
@@ -416,7 +440,9 @@ int main(void)
     "estimator=ML\n"
     "beam_mass=6\n"
     "use_label_dictionary=0\n"
-    "guess_count_limit=200"
+    "guess_count_limit=200\n"
+    "use_unstructured_sublabels=0\n"
+    "use_structured_sublabels=0\n"
     ;
 
   std::istringstream opt_file(opt_str);
@@ -437,6 +463,8 @@ int main(void)
   assert(options.beam_mass == 6);
   assert(options.use_label_dictionary == 0);
   assert(options.guess_count_limit == 200);
+  assert(options.use_unstructured_sublabels == 0);
+  assert(options.use_structured_sublabels == 0);
   counter = 0;
 
   try

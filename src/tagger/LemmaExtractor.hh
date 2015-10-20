@@ -52,7 +52,8 @@ class LemmaExtractor
   void train(const Data &train_data, 
 	     const Data &dev_data, 
 	     const LabelExtractor &le,
-	     std::ostream &msg_out);
+	     std::ostream &msg_out,
+	     const TaggerOptions &options);
 
   virtual std::string get_lemma_candidate(const std::string &word_form, 
 					  const std::string &label);

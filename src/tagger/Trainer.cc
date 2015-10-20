@@ -28,7 +28,8 @@ Trainer::Trainer(unsigned int max_passes,
 		 ParamTable &pt,
 		 const LabelExtractor &label_extractor,
 		 const LemmaExtractor &lemma_extractor,
-		 std::ostream &msg_out):
+		 std::ostream &msg_out,
+		 const TaggerOptions &options):
   max_passes(max_passes),
   max_useless_passes(max_useless_passes),
   pt(pt),
@@ -36,7 +37,7 @@ Trainer::Trainer(unsigned int max_passes,
   lemma_extractor(lemma_extractor),
   boundary_label(label_extractor.get_boundary_label()),
   msg_out(msg_out)
-{}
+{ static_cast<void>(options); }
 
 #else // TEST_Trainer_cc
 

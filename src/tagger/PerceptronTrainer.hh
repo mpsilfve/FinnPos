@@ -30,6 +30,7 @@
 #include "Sentence.hh"
 #include "Data.hh"
 #include "exceptions.hh"
+#include "TaggerOptions.hh"
 
 class PerceptronTrainer : public Trainer
 {
@@ -39,7 +40,8 @@ public:
 		    ParamTable &pt,
 		    const LabelExtractor &label_e,
 		    const LemmaExtractor &le,
-		    std::ostream &msg_out);
+		    std::ostream &msg_out,
+		    const TaggerOptions &options);
   
   void train(const Data &train_data, const Data &dev_data, 
 	     unsigned int beam = -1,
@@ -55,6 +57,9 @@ private:
 
   ParamTable pos_params;
   ParamTable neg_params;
+
+  bool use_unstruct_sub_labels;
+  bool use_struct_sub_labels;
 
   void update(const Sentence &gold_s, 
 	      const Sentence &sys_s);

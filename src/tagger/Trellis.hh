@@ -28,11 +28,12 @@
 #include "TrellisColumn.hh"
 #include "Sentence.hh"
 #include "Data.hh"
+#include "TaggerOptions.hh"
 
 class Trellis
 {
 public:
-  Trellis(Sentence &s, unsigned int boundary_label, unsigned int beam=-1);
+  Trellis(Sentence &s, unsigned int boundary_label, bool use_unstruct_sublabels, bool use_struct_subabels, unsigned int beam=-1);
 
   LabelVector get_maximum_a_posteriori_assignment(const ParamTable &pt);
   LabelVector get_marginalized_max_assignment(const ParamTable &pt);
@@ -72,6 +73,9 @@ private:
   Word bw;
 
   unsigned int beam;
+
+  bool use_unstruct_sublabels;
+  bool use_struct_sublabels;
 
   void reserve(unsigned int n, unsigned int boundary_label);
 

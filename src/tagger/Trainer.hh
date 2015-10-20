@@ -27,6 +27,7 @@
 #include "Trainer.hh"
 #include "Data.hh"
 #include "ParamTable.hh"
+#include "TaggerOptions.hh"
 
 class Trainer
 {
@@ -36,7 +37,8 @@ public:
 	  ParamTable &pt,
 	  const LabelExtractor &label_extractor,
 	  const LemmaExtractor &lemma_extractor,
-	  std::ostream &msg_out);
+	  std::ostream &msg_out,
+	  const TaggerOptions &options);
   
   virtual void train(const Data &train_data, 
 		     const Data &dev_data,

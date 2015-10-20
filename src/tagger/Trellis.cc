@@ -47,11 +47,15 @@ void normalize(std::vector<float> &v)
 
 Trellis::Trellis(Sentence &sent, 
 		 unsigned int boundary_label,
+		 bool use_unstruct_sublabels, 
+		 bool use_struct_sublabels,
 		 unsigned int beam):
   s(&sent),
   marginals_set(0),
   bw(boundary_label),
-  beam(beam)
+  beam(beam),
+  use_unstruct_sublabels(use_unstruct_sublabels),
+  use_struct_sublabels(use_struct_sublabels)
 {
   reserve(sent.size(), boundary_label);
 
@@ -290,7 +294,12 @@ void Trellis::set_beam(unsigned int beam)
 
 void Trellis::reserve(unsigned int n, unsigned int boundary_label)
 { 
-  trellis.insert(trellis.end(), n, TrellisColumn(boundary_label, beam));
+  trellis.insert(trellis.end(), 
+		 n, 
+		 TrellisColumn(boundary_label, 
+			       beam,
+			       use_unstruct_sublabels,
+			       use_struct_sublabels));
 }
 
 unsigned int Trellis::get_index(unsigned int position, 
@@ -317,10 +326,12 @@ unsigned int Trellis::get_index(unsigned int position,
 void populate(Data &data, 
 	      TrellisVector &v,
 	      unsigned int boundary_label, 
+	      bool use_unstruct_sublabels,
+	      bool use_struct_sublabels,
 	      unsigned int beam)
 {
   for (unsigned int i = 0; i < data.size(); ++i)
-    { v.push_back(new Trellis(data.at(i), boundary_label, beam)); }
+    { v.push_back(new Trellis(data.at(i), boundary_label, use_unstruct_sublabels, use_struct_sublabels, beam)); }
 }
 
 #else // TEST_Trellis_cc

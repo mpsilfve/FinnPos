@@ -31,7 +31,8 @@ float expsumlog(float x, float y);
 #include <cfloat>
 
 #define STRUCT_SL 1
-
+#define UNSTRUCT_SL 1
+ 
 float expsumlog(float x, float y)
 {
   if (y > x)
@@ -43,13 +44,17 @@ float expsumlog(float x, float y)
 }
 
 TrellisColumn::TrellisColumn(unsigned int boundary_label,
-			     unsigned int beam_width):
+			     unsigned int beam_width,
+			     bool use_unstruct_sublabels,
+			     bool use_struct_sublabels):
   pcol                        (0),
   ncol                        (0),
   word                        (0),
   boundary_label (boundary_label),
   beam_width(beam_width),
-  use_adaptive_beam(0)
+  use_adaptive_beam(0),
+  use_unstruct_sublabels(use_unstruct_sublabels),
+  use_struct_sublabels(use_struct_sublabels)
 {}  
 
 void TrellisColumn::set_ncol(TrellisColumn * ncol)
@@ -146,7 +151,7 @@ unsigned int TrellisColumn::get_nlabel(unsigned int nlabel_index) const
 float TrellisColumn::get_emission_score(const ParamTable &pt,
 					unsigned int label_index) const
 {
-  return pt.get_all_unstruct(*word, word->get_label(label_index), 1);
+  return pt.get_all_unstruct(*word, word->get_label(label_index), use_unstruct_sublabels);
 }
 
 float TrellisColumn::get_transition_fw_score(const ParamTable &pt, 
@@ -163,7 +168,7 @@ float TrellisColumn::get_transition_fw_score(const ParamTable &pt,
 
       float pcol_fw = (pcol == 0 ? 0 : pcol->get_fw(k, plabel_index));
       
-      float tr_score = pt.get_all_struct_fw(pplabel, plabel, label, STRUCT_SL);
+      float tr_score = pt.get_all_struct_fw(pplabel, plabel, label, use_struct_sublabels);
 
       score = expsumlog(score, tr_score + pcol_fw);
     }
@@ -186,7 +191,7 @@ float TrellisColumn::get_transition_bw_score(const ParamTable &pt,
       unsigned int label  = get_label(label_index);
       unsigned int nlabel = get_nlabel(i);
 
-      float tr_score = pt.get_all_struct_bw(plabel, label, nlabel, STRUCT_SL);
+      float tr_score = pt.get_all_struct_bw(plabel, label, nlabel, use_struct_sublabels);
 
       score = expsumlog(score, tr_score + ncol_em + ncol_bw);
     }
@@ -316,7 +321,7 @@ void TrellisColumn::compute_viterbi(const ParamTable &pt)
 	      
 	      float pcol_score = (pcol == 0 ? 0 : pcell->viterbi);
 
-	      float tr_score = pt.get_all_struct_fw(pplabel, plabel, label, STRUCT_SL);
+	      float tr_score = pt.get_all_struct_fw(pplabel, plabel, label, use_struct_sublabels);
 	      
 	      float score = tr_score + pcol_score + em;
 	      	      
@@ -401,7 +406,7 @@ void TrellisColumn::set_viterbi_tr_score(const ParamTable &pt,
       
       float pcol_score = (pcol == 0 ? 0 : pcol->get_viterbi(k, plabel_index));
 
-      float tr_score = pt.get_all_struct_fw(pplabel, plabel, label, STRUCT_SL);
+      float tr_score = pt.get_all_struct_fw(pplabel, plabel, label, use_struct_sublabels);
 
       float score = tr_score + pcol_score;
 
