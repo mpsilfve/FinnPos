@@ -1,0 +1,64 @@
+Reading training data.
+Training label guesser.
+Reading development data.
+Setting label guesses.
+Estimating lemmatizer parameters.
+  Train pass 1:
+    Dev acc: 96.2449%
+  Train pass 2:
+    Dev acc: 97.6115%
+  Train pass 3:
+    Dev acc: 98.1608%
+  Train pass 4:
+    Dev acc: 98.4162%
+  Train pass 5:
+    Dev acc: 98.578%
+  Train pass 6:
+    Dev acc: 98.6887%
+  Train pass 7:
+    Dev acc: 98.8122%
+  Train pass 8:
+    Dev acc: 98.8675%
+  Train pass 9:
+    Dev acc: 98.9101%
+  Train pass 10:
+    Dev acc: 98.9271%
+  Final dev acc: 98.9271%
+Estimating tagger parameters.
+  Train pass 1
+
+    Dev acc: 96.8494%
+  Train pass 2
+
+    Dev acc: 99.0255%
+  Train pass 3
+
+    Dev acc: 99.474%
+  Final dev acc: 99.474%
+Storing model.
+
+real	6m8.279s
+user	6m7.007s
+sys	0m1.640s
+LOAD MODEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m1.759s
+user	0m1.665s
+sys	0m0.097s
+LABEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m5.674s
+user	0m5.546s
+sys	0m0.133s
+EVAL LOG
+Comparing no_sl_config.tagged and ../../data/tdt/tdt.test.feats (gold standard).
+Label accuracy for all words: 0.918892
+Label accuracy for IV words:  0.974665
+Label accuracy for OOV words: 0.706337
+Lemma accuracy for all words: 0.914018
+Lemma accuracy for IV words:  0.990704
+Lemma accuracy for OOV words: 0.621756

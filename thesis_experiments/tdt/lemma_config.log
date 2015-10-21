@@ -1,0 +1,45 @@
+Reading training data.
+Training label guesser.
+Reading development data.
+Setting label guesses.
+Estimating lemmatizer parameters.
+  Train pass 1:
+    Dev acc: 96.2449%
+  Train pass 2:
+    Dev acc: 97.6115%
+  Train pass 3:
+    Dev acc: 98.1608%
+  Train pass 4:
+    Dev acc: 98.4162%
+  Train pass 5:
+    Dev acc: 98.578%
+  Train pass 6:
+    Dev acc: 98.6887%
+  Train pass 7:
+    Dev acc: 98.8122%
+  Train pass 8:
+    Dev acc: 98.8675%
+  Train pass 9:
+    Dev acc: 98.9101%
+  Train pass 10:
+    Dev acc: 98.9271%
+  Train pass 11:
+    Dev acc: 98.9825%
+  Train pass 12:
+    Dev acc: 99.008%
+  Train pass 13:
+    Dev acc: 99.0378%
+  Train pass 14:
+    Dev acc: 99.0719%
+  Train pass 15:
+    Dev acc: 99.1059%
+  Train pass 16:
+    Dev acc: 99.1059%
+  Final dev acc: 99.1059%
+Estimating tagger parameters.
+  Final dev acc: -100%
+Storing model.
+
+real	4m14.777s
+user	4m13.989s
+sys	0m1.044s

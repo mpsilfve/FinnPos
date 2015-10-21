@@ -1,0 +1,77 @@
+TRAINING LOG
+Reading training data.
+Training label guesser.
+Reading development data.
+Setting label guesses.
+Estimating lemmatizer parameters.
+  Train pass 1:
+    Dev acc: 97.5276%
+  Train pass 2:
+    Dev acc: 98.5223%
+  Train pass 3:
+    Dev acc: 98.9475%
+  Train pass 4:
+    Dev acc: 99.1786%
+  Train pass 5:
+    Dev acc: 99.3231%
+  Train pass 6:
+    Dev acc: 99.3891%
+  Train pass 7:
+    Dev acc: 99.4386%
+  Train pass 8:
+    Dev acc: 99.5088%
+  Train pass 9:
+    Dev acc: 99.5831%
+  Train pass 10:
+    Dev acc: 99.6409%
+  Train pass 11:
+    Dev acc: 99.678%
+  Train pass 12:
+    Dev acc: 99.6946%
+  Train pass 13:
+    Dev acc: 99.7069%
+  Train pass 14:
+    Dev acc: 99.74%
+  Train pass 15:
+    Dev acc: 99.7565%
+  Train pass 16:
+    Dev acc: 99.7647%
+  Final dev acc: 99.7647%
+Estimating tagger parameters.
+  Train pass 1
+
+    Dev acc: 97.9432%
+  Train pass 2
+
+    Dev acc: 99.0892%
+  Train pass 3
+
+    Dev acc: 99.2762%
+  Final dev acc: 99.2762%
+Storing model.
+
+real	4m18.250s
+user	4m16.816s
+sys	0m1.704s
+LOAD MODEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m2.111s
+user	0m1.998s
+sys	0m0.115s
+LABEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m2.866s
+user	0m2.724s
+sys	0m0.145s
+EVAL LOG
+Comparing omorfi_ustr_sl_config.tagged and ../../data/ftb/ftb.omorfi.test.feats (gold standard).
+Label accuracy for all words: 0.960747
+Label accuracy for IV words:  0.971442
+Label accuracy for OOV words: 0.919796
+Lemma accuracy for all words: 0.953841
+Lemma accuracy for IV words:  0.989879
+Lemma accuracy for OOV words: 0.815861

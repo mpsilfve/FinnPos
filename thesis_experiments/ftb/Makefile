@@ -4,10 +4,13 @@ TAGGER=../../bin/finnpos-label
 EVALER=../../bin/finnpos-eval
 FTB=../../data/ftb
 
-CONFIG_FILES=all_sl_config no_sl_config omorfi_all_sl_config omorfi_no_sl_config omorfi_ustr_sl_config ustr_sl_config
+CONFIG_FILES=all_sl_config no_sl_config omorfi_all_sl_config omorfi_no_sl_config omorfi_ustr_sl_config ustr_sl_config lemma_config
 
 all:$(CONFIG_FILES:%=%.log)
 	rm *.model
+
+clean:
+	rm -f *.model *.tagged *.log
 
 omorfi_%_config.log:omorfi_%_config 
 	echo TRAINING LOG >> $@

@@ -1,0 +1,76 @@
+Reading training data.
+Training label guesser.
+Reading development data.
+Setting label guesses.
+Estimating lemmatizer parameters.
+  Train pass 1:
+    Dev acc: 97.5276%
+  Train pass 2:
+    Dev acc: 98.5223%
+  Train pass 3:
+    Dev acc: 98.9475%
+  Train pass 4:
+    Dev acc: 99.1786%
+  Train pass 5:
+    Dev acc: 99.3231%
+  Train pass 6:
+    Dev acc: 99.3891%
+  Train pass 7:
+    Dev acc: 99.4386%
+  Train pass 8:
+    Dev acc: 99.5088%
+  Train pass 9:
+    Dev acc: 99.5831%
+  Train pass 10:
+    Dev acc: 99.6409%
+  Train pass 11:
+    Dev acc: 99.678%
+  Train pass 12:
+    Dev acc: 99.6946%
+  Train pass 13:
+    Dev acc: 99.7069%
+  Train pass 14:
+    Dev acc: 99.74%
+  Train pass 15:
+    Dev acc: 99.7565%
+  Train pass 16:
+    Dev acc: 99.7647%
+  Final dev acc: 99.7647%
+Estimating tagger parameters.
+  Train pass 1
+
+    Dev acc: 97.0143%
+  Train pass 2
+
+    Dev acc: 98.9083%
+  Train pass 3
+
+    Dev acc: 99.1857%
+  Final dev acc: 99.1857%
+Storing model.
+
+real	4m11.056s
+user	4m9.526s
+sys	0m1.747s
+LOAD MODEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m2.690s
+user	0m2.567s
+sys	0m0.125s
+LABEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m5.528s
+user	0m5.374s
+sys	0m0.159s
+EVAL LOG
+Comparing ustr_sl_config.tagged and ../../data/ftb/ftb.test.feats (gold standard).
+Label accuracy for all words: 0.930513
+Label accuracy for IV words:  0.97152
+Label accuracy for OOV words: 0.773506
+Lemma accuracy for all words: 0.942706
+Lemma accuracy for IV words:  0.989958
+Lemma accuracy for OOV words: 0.76179

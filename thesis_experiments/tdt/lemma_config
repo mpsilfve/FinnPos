@@ -1,0 +1,4 @@
+# Config file for FinnTreeBank tagger.
+
+max_train_passes=0
+max_lemmatizer_passes=16
