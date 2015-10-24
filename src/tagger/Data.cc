@@ -104,11 +104,12 @@ unsigned int Data::size(void) const
 
 void Data::set_label_guesses(const LabelExtractor &g, 
 			     bool use_label_dict,
-			     float mass)
+			     float mass,
+			     int candidate_count)
 {
   for (unsigned int i = 0; i < data.size(); ++i)
     {
-      data[i].set_label_guesses(g, use_label_dict, mass);
+      data[i].set_label_guesses(g, use_label_dict, mass, candidate_count);
     }
 }
 

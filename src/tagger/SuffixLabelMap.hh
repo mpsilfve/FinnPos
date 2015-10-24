@@ -25,7 +25,7 @@ public:
 
   void normalize(void);
   
-  void set_guesses(const std::string &word_form, LabelVector &v, float mass) const;
+  void set_guesses(const std::string &word_form, LabelVector &v, float mass, int candidate_count = -1) const;
 
   bool operator==(const SuffixLabelMap &another) const;
   bool empty(void) const;

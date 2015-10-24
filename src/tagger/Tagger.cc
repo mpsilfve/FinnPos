@@ -107,9 +107,12 @@ void Tagger::train(std::istream &train_in,
   dev_data.clear_label_guesses(); 
 
   msg_out << "Setting label guesses." << std::endl;
-  train_data.set_label_guesses(label_extractor, 0, tagger_options.guess_mass);
+  train_data.set_label_guesses(label_extractor, 0, 
+			       tagger_options.guess_mass, 
+			       tagger_options.guesses);
   dev_data.set_label_guesses(label_extractor, 0, 
-			     0.99 /*tagger_options.guess_mass*/);
+			     tagger_options.guess_mass,
+			     tagger_options.guesses);
 
   msg_out << "Estimating lemmatizer parameters." << std::endl;
   lemma_extractor.set_max_passes(tagger_options.max_lemmatizer_passes);
@@ -244,13 +247,14 @@ void Tagger::label_stream(std::istream &in)
 
       s.set_label_guesses(label_extractor, 
 			  tagger_options.use_label_dictionary, 
-			  tagger_options.guess_mass);
+			  tagger_options.guess_mass,
+			  tagger_options.guesses);
 
       Trellis trellis(s, label_extractor.get_boundary_label(), 
 		      tagger_options.use_unstructured_sublabels,
 		      tagger_options.use_structured_sublabels,
 		      tagger_options.beam);
-  
+      trellis.set_beam_mass(tagger_options.beam_mass);
       trellis.set_maximum_a_posteriori_assignment(param_table);      
   
       s.predict_lemma(lemma_extractor, label_extractor);

@@ -140,7 +140,8 @@ bool SuffixLabelMap::empty(void) const
 
 void SuffixLabelMap::set_guesses(const std::string &word_form, 
 				 LabelVector &v, 
-				 float mass) const
+				 float mass,
+				 int candidate_count) const
 {
   assert(suffix_label_probs.count(""));
   static_cast<void>(v);
@@ -202,6 +203,10 @@ void SuffixLabelMap::set_guesses(const std::string &word_form,
       v.push_back(label_prob_pairs[i].second);
 
       tentative_mass += label_prob_pairs[i].first;
+      if (candidate_count != -1 and 
+	  static_cast<int>(i) >= candidate_count)
+	{ break; }
+
       if (tentative_mass > mass and i > 20)
 	{ break; }      
     }

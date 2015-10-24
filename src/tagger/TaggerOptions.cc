@@ -60,6 +60,7 @@ const char * use_label_dictionary_id = "use_label_dictionary=";
 const char * guess_count_limit_id = "guess_count_limit=";
 const char * use_unstructured_sublabels_id = "use_unstructured_sublabels=";
 const char * use_structured_sublabels_id = "use_structured_sublabels=";
+const char * guesses_id = "guesses=";
 
 std::string despace(const std::string &line)
 {
@@ -93,7 +94,8 @@ TaggerOptions::TaggerOptions(Estimator estimator,
 			     bool use_label_dictionary,
 			     int guess_count_limit,
 			     bool use_unstructured_sublabels,
-			     bool use_structured_sublabels):
+			     bool use_structured_sublabels,
+			     int guesses):
   estimator(estimator),
   inference(inference),
   suffix_length(suffix_length),
@@ -110,7 +112,8 @@ TaggerOptions::TaggerOptions(Estimator estimator,
   use_label_dictionary(use_label_dictionary),
   guess_count_limit(guess_count_limit),
   use_unstructured_sublabels(use_unstructured_sublabels),
-  use_structured_sublabels(use_structured_sublabels)
+  use_structured_sublabels(use_structured_sublabels),
+  guesses(guesses)
 {
 }
 
@@ -131,7 +134,8 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
   use_label_dictionary(1),
   guess_count_limit(50),
   use_unstructured_sublabels(1),
-  use_structured_sublabels(1)
+  use_structured_sublabels(1),
+  guesses(-1)
 {
   while (in)
     {
@@ -183,6 +187,8 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
 	{ use_unstructured_sublabels = get_uint(strip(line, use_unstructured_sublabels_id)); }
       else if (line.find(use_structured_sublabels_id) != std::string::npos)
 	{ use_structured_sublabels = get_uint(strip(line, use_structured_sublabels_id)); }
+      else if (line.find(guesses_id) != std::string::npos)
+	{ guesses = get_int(strip(line, guesses_id)); }
       else
 	{ throw SyntaxError(); }
     }
@@ -210,6 +216,7 @@ void TaggerOptions::store(std::ostream &out) const
   field_names.push_back("guess_count_limit");
   field_names.push_back("use_unstructured_sublabels");
   field_names.push_back("use_structured_sublabels");
+  field_names.push_back("guesses");
 
   fields.push_back(estimator);
   fields.push_back(inference);
@@ -228,6 +235,7 @@ void TaggerOptions::store(std::ostream &out) const
   fields.push_back(guess_count_limit);
   fields.push_back(use_unstructured_sublabels);
   fields.push_back(use_structured_sublabels);
+  fields.push_back(guesses);
 
   write_vector(out, field_names);
   write_vector(out, fields);
@@ -285,6 +293,8 @@ void TaggerOptions::load(std::istream &in, std::ostream &msg_out, bool reverse_b
 	{ use_unstructured_sublabels = static_cast<unsigned int>(fields[i]); }
       else if (field_names[i] == "use_structured_sublabels")
 	{ use_structured_sublabels = static_cast<unsigned int>(fields[i]); }
+      else if (field_names[i] == "guesses")
+	{ guesses = static_cast<int>(fields[i]); }
       else
 	{
 	  msg_out << "Found unknown parameter name " 
@@ -384,7 +394,8 @@ bool TaggerOptions::operator==(const TaggerOptions &another) const
      use_label_dictionary == another.use_label_dictionary and
      use_unstructured_sublabels == another.use_unstructured_sublabels and
      use_structured_sublabels == another.use_structured_sublabels and
-     guess_count_limit == another.guess_count_limit)
+     guess_count_limit == another.guess_count_limit and
+     guesses == another.guesses)
 ;
 }
 
@@ -421,7 +432,8 @@ int main(void)
 	 empty_options.use_label_dictionary == 1 &&
 	 empty_options.guess_count_limit == 50 &&
 	 empty_options.use_unstructured_sublabels == 1 &&
-	 empty_options.use_structured_sublabels == 1);
+	 empty_options.use_structured_sublabels == 1 &&
+	 empty_options.guesses == -1);
 
   counter = 0;
 
@@ -443,6 +455,7 @@ int main(void)
     "guess_count_limit=200\n"
     "use_unstructured_sublabels=0\n"
     "use_structured_sublabels=0\n"
+    "guesses=10\n"
     ;
 
   std::istringstream opt_file(opt_str);
@@ -465,6 +478,7 @@ int main(void)
   assert(options.guess_count_limit == 200);
   assert(options.use_unstructured_sublabels == 0);
   assert(options.use_structured_sublabels == 0);
+  assert(options.guesses == 10);
   counter = 0;
 
   try

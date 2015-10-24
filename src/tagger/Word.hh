@@ -54,7 +54,8 @@ public:
 
   void set_label_guesses(const LabelExtractor &g, 
 			 bool use_label_dict,
-			 float mass);
+			 float mass,
+			 int candidate_count = -1);
   
   void clear_label_guesses(void);
 

@@ -52,6 +52,7 @@ struct TaggerOptions
   int guess_count_limit;
   bool use_unstructured_sublabels;
   bool use_structured_sublabels;
+  int guesses;
 
   TaggerOptions(void);
 
@@ -71,7 +72,8 @@ struct TaggerOptions
 		bool use_label_dictionary = 1,
 		int guess_count_limit = 50,
 		bool use_unstructured_sublabels = 1,
-		bool use_structured_sublabels = 1);
+		bool use_structured_sublabels = 1,
+		int guesses = -1);
   
   TaggerOptions(std::istream &in, unsigned int &counter);
 

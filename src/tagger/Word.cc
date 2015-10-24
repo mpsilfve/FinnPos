@@ -51,12 +51,14 @@ void Word::clear_label_guesses(void)
 
 void Word::set_label_guesses(const LabelExtractor &g, 
 			     bool use_label_dict,
-			     float mass)
+			     float mass,
+			     int candidate_count)
 { 
   g.set_label_candidates(word_form, 
 			 use_label_dict, 
 			 mass, 
-			 label_candidates); 
+			 label_candidates,
+			 candidate_count); 
 }
 
 void Word::predict_lemma(LemmaExtractor &g, const LabelExtractor &e)

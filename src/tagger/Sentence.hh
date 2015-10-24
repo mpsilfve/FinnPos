@@ -56,7 +56,8 @@ class Sentence
   void clear_label_guesses(void);
   void set_label_guesses(const LabelExtractor &g, 
 			 bool use_label_dict,
-			 float mass);
+			 float mass,
+			 int candidate_count = -1);
   void predict_lemma(LemmaExtractor &g, const LabelExtractor &e);
 
   void unset_lemma(void);

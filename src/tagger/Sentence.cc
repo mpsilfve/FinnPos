@@ -133,11 +133,11 @@ void Sentence::clear_label_guesses(void)
     { sentence[i].clear_label_guesses(); }
 }
 
-void Sentence::set_label_guesses(const LabelExtractor &g, bool use_label_dict, float mass)
+void Sentence::set_label_guesses(const LabelExtractor &g, bool use_label_dict, float mass, int candidate_count)
 {
   for (unsigned int i = 0; i < sentence.size(); ++i)
     { 
-      sentence[i].set_label_guesses(g, use_label_dict, mass); 
+      sentence[i].set_label_guesses(g, use_label_dict, mass, candidate_count); 
     }
 }
 

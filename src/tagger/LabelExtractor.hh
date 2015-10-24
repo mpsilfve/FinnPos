@@ -44,7 +44,8 @@ class LabelExtractor
   virtual void set_label_candidates(const std::string &word_form,
 				    bool use_lexicon,
 				    float mass, 
-				    LabelVector &target) const;
+				    LabelVector &target,
+				    int candidate_count = -1) const;
   void train(Data &data);
   unsigned int get_boundary_label(void) const;
   unsigned int get_label(const std::string &label_string);

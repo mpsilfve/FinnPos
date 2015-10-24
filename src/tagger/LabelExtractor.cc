@@ -228,7 +228,8 @@ bool LabelExtractor::open_class(unsigned int label) const
 void LabelExtractor::set_label_candidates(const std::string &word_form, 
 					  bool use_lexicon,
 					  float mass, 
-					  LabelVector &target) const
+					  LabelVector &target,
+					  int candidate_count) const
 {
   if (word_form == BOUNDARY_WF)
     { 
@@ -258,7 +259,7 @@ void LabelExtractor::set_label_candidates(const std::string &word_form,
   while (wf_len > 0 && label_counts[wf_len].empty())
     { --wf_len; }
 
-  label_counts[wf_len].set_guesses(word_form, target, mass);
+  label_counts[wf_len].set_guesses(word_form, target, mass, candidate_count);
 
   if (lexicon.count(word_form) != 0)
     {
