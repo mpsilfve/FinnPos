@@ -4,7 +4,7 @@ TAGGER=../../bin/finnpos-label
 EVALER=../../bin/finnpos-eval
 FTB=../../data/ftb
 
-CONFIG_FILES=all_sl_config no_sl_config omorfi_all_sl_config omorfi_no_sl_config omorfi_ustr_sl_config ustr_sl_config lemma_config
+CONFIG_FILES=all_sl_config beam_0.0_config beam_0.5_config beam_0.7_config beam_0.999_config beam_0.99_config beam_0.9_config beam_10_config beam_15_config beam_1_config beam_20_config beam_5_config beam_infty_config guesses_0.5_config guesses_0.7_config guesses_0.999_config guesses_0.99_config guesses_0.9_config guesses_10_config guesses_15_config guesses_1_config guesses_20_config guesses_25_config guesses_30_config guesses_35_config guesses_40_config guesses_45_config guesses_5_config lemma_config no_sl_config omorfi_all_sl_config omorfi_beam_0.0_config omorfi_beam_0.999_config omorfi_no_sl_config omorfi_ustr_sl_config ustr_sl_config
 
 all:$(CONFIG_FILES:%=%.log)
 	rm *.model

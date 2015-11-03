@@ -2,6 +2,7 @@ Reading training data.
 Training label guesser.
 Reading development data.
 Setting label guesses.
+Average number of label candidates: 20.5928
 Estimating lemmatizer parameters.
   Train pass 1:
     Dev acc: 97.5276%
@@ -40,6 +41,6 @@ Estimating tagger parameters.
   Final dev acc: -100%
 Storing model.
 
-real	2m42.171s
-user	2m41.465s
-sys	0m0.838s
+real	2m36.284s
+user	2m35.467s
+sys	0m0.922s

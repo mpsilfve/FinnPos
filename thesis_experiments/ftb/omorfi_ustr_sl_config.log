@@ -3,6 +3,7 @@ Reading training data.
 Training label guesser.
 Reading development data.
 Setting label guesses.
+Average number of label candidates: 20.5989
 Estimating lemmatizer parameters.
   Train pass 1:
     Dev acc: 97.5276%
@@ -50,28 +51,74 @@ Estimating tagger parameters.
   Final dev acc: 99.2762%
 Storing model.
 
-real	4m18.250s
-user	4m16.816s
-sys	0m1.704s
+real	4m13.679s
+user	4m12.093s
+sys	0m1.792s
 LOAD MODEL LOG
 ../../bin/finnpos-label: Loading tagger.
 ../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
 
-real	0m2.111s
-user	0m1.998s
+real	0m2.080s
+user	0m1.968s
 sys	0m0.115s
 LABEL LOG
 ../../bin/finnpos-label: Loading tagger.
 ../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
 
-real	0m2.866s
-user	0m2.724s
+real	0m2.826s
+user	0m2.682s
 sys	0m0.145s
 EVAL LOG
 Comparing omorfi_ustr_sl_config.tagged and ../../data/ftb/ftb.omorfi.test.feats (gold standard).
-Label accuracy for all words: 0.960747
+Label accuracy for all words: 0.960684
 Label accuracy for IV words:  0.971442
-Label accuracy for OOV words: 0.919796
-Lemma accuracy for all words: 0.953841
+Label accuracy for OOV words: 0.919495
+Lemma accuracy for all words: 0.953779
 Lemma accuracy for IV words:  0.989879
-Lemma accuracy for OOV words: 0.815861
+Lemma accuracy for OOV words: 0.81556
+TRAINING LOG
+Reading training data.
+Training label guesser.
+Reading development data.
+Setting label guesses.
+Average number of label candidates: 20.5989
+Estimating lemmatizer parameters.
+  Final dev acc: -100%
+Estimating tagger parameters.
+  Train pass 1
+
+    Dev acc: 97.9432%
+  Train pass 2
+
+    Dev acc: 99.0892%
+  Train pass 3
+
+    Dev acc: 99.2762%
+  Final dev acc: 99.2762%
+Storing model.
+
+real	2m59.915s
+user	2m58.026s
+sys	0m2.025s
+LOAD MODEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m2.144s
+user	0m2.020s
+sys	0m0.125s
+LABEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m3.005s
+user	0m2.840s
+sys	0m0.168s
+EVAL LOG
+Comparing omorfi_ustr_sl_config.tagged and ../../data/ftb/ftb.omorfi.test.feats (gold standard).
+Label accuracy for all words: 0.960684
+Label accuracy for IV words:  0.971442
+Label accuracy for OOV words: 0.919495
+Lemma accuracy for all words: 0.80479
+Lemma accuracy for IV words:  0.989879
+Lemma accuracy for OOV words: 0.096125

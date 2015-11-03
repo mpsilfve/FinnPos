@@ -3,6 +3,7 @@ Reading training data.
 Training label guesser.
 Reading development data.
 Setting label guesses.
+Average number of label candidates: 20.5989
 Estimating lemmatizer parameters.
   Train pass 1:
     Dev acc: 97.5276%
@@ -65,28 +66,89 @@ Estimating tagger parameters.
   Final dev acc: 99.813%
 Storing model.
 
-real	5m58.628s
-user	5m56.821s
-sys	0m2.136s
+real	5m50.571s
+user	5m48.773s
+sys	0m2.104s
 LOAD MODEL LOG
 ../../bin/finnpos-label: Loading tagger.
 ../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
 
-real	0m1.555s
-user	0m1.476s
-sys	0m0.081s
+real	0m1.553s
+user	0m1.470s
+sys	0m0.083s
 LABEL LOG
 ../../bin/finnpos-label: Loading tagger.
 ../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
 
-real	0m2.232s
-user	0m2.121s
+real	0m2.212s
+user	0m2.101s
+sys	0m0.112s
+EVAL LOG
+Comparing omorfi_no_sl_config.tagged and ../../data/ftb/ftb.omorfi.test.feats (gold standard).
+Label accuracy for all words: 0.959627
+Label accuracy for IV words:  0.971756
+Label accuracy for OOV words: 0.913187
+Lemma accuracy for all words: 0.953779
+Lemma accuracy for IV words:  0.989958
+Lemma accuracy for OOV words: 0.81526
+TRAINING LOG
+Reading training data.
+Training label guesser.
+Reading development data.
+Setting label guesses.
+Average number of label candidates: 20.5989
+Estimating lemmatizer parameters.
+  Final dev acc: -100%
+Estimating tagger parameters.
+  Train pass 1
+
+    Dev acc: 97.9613%
+  Train pass 2
+
+    Dev acc: 99.3003%
+  Train pass 3
+
+    Dev acc: 99.5597%
+  Train pass 4
+
+    Dev acc: 99.626%
+  Train pass 5
+
+    Dev acc: 99.7165%
+  Train pass 6
+
+    Dev acc: 99.7768%
+  Train pass 7
+
+    Dev acc: 99.807%
+  Train pass 8
+
+    Dev acc: 99.813%
+  Final dev acc: 99.813%
+Storing model.
+
+real	4m46.857s
+user	4m44.387s
+sys	0m2.622s
+LOAD MODEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m1.462s
+user	0m1.385s
+sys	0m0.079s
+LABEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m2.075s
+user	0m1.965s
 sys	0m0.113s
 EVAL LOG
 Comparing omorfi_no_sl_config.tagged and ../../data/ftb/ftb.omorfi.test.feats (gold standard).
-Label accuracy for all words: 0.959751
-Label accuracy for IV words:  0.971677
-Label accuracy for OOV words: 0.914088
-Lemma accuracy for all words: 0.953904
-Lemma accuracy for IV words:  0.989879
-Lemma accuracy for OOV words: 0.816161
+Label accuracy for all words: 0.959627
+Label accuracy for IV words:  0.971756
+Label accuracy for OOV words: 0.913187
+Lemma accuracy for all words: 0.804852
+Lemma accuracy for IV words:  0.989958
+Lemma accuracy for OOV words: 0.096125

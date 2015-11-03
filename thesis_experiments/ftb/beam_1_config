@@ -1,0 +1,7 @@
+# Config file for Turku Treebank tagger.
+
+guess_mass=0.999
+beam=1
+max_train_passes=2
+max_lemmatizer_passes=0
+guess_count_limit=-1

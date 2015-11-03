@@ -2,40 +2,9 @@ Reading training data.
 Training label guesser.
 Reading development data.
 Setting label guesses.
+Average number of label candidates: 20.5989
 Estimating lemmatizer parameters.
-  Train pass 1:
-    Dev acc: 97.5276%
-  Train pass 2:
-    Dev acc: 98.5223%
-  Train pass 3:
-    Dev acc: 98.9475%
-  Train pass 4:
-    Dev acc: 99.1786%
-  Train pass 5:
-    Dev acc: 99.3231%
-  Train pass 6:
-    Dev acc: 99.3891%
-  Train pass 7:
-    Dev acc: 99.4386%
-  Train pass 8:
-    Dev acc: 99.5088%
-  Train pass 9:
-    Dev acc: 99.5831%
-  Train pass 10:
-    Dev acc: 99.6409%
-  Train pass 11:
-    Dev acc: 99.678%
-  Train pass 12:
-    Dev acc: 99.6946%
-  Train pass 13:
-    Dev acc: 99.7069%
-  Train pass 14:
-    Dev acc: 99.74%
-  Train pass 15:
-    Dev acc: 99.7565%
-  Train pass 16:
-    Dev acc: 99.7647%
-  Final dev acc: 99.7647%
+  Final dev acc: -100%
 Estimating tagger parameters.
   Train pass 1
 
@@ -46,28 +15,28 @@ Estimating tagger parameters.
   Final dev acc: 98.7514%
 Storing model.
 
-real	3m49.397s
-user	3m47.617s
-sys	0m1.659s
+real	2m23.495s
+user	2m21.987s
+sys	0m1.646s
 LOAD MODEL LOG
 ../../bin/finnpos-label: Loading tagger.
 ../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
 
-real	0m2.703s
-user	0m2.580s
-sys	0m0.126s
+real	0m2.728s
+user	0m2.594s
+sys	0m0.129s
 LABEL LOG
 ../../bin/finnpos-label: Loading tagger.
 ../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
 
-real	0m6.418s
-user	0m6.263s
-sys	0m0.162s
+real	0m5.264s
+user	0m5.099s
+sys	0m0.170s
 EVAL LOG
 Comparing all_sl_config.tagged and ../../data/ftb/ftb.test.feats (gold standard).
-Label accuracy for all words: 0.933188
-Label accuracy for IV words:  0.971677
-Label accuracy for OOV words: 0.785822
-Lemma accuracy for all words: 0.943701
+Label accuracy for all words: 0.932877
+Label accuracy for IV words:  0.971756
+Label accuracy for OOV words: 0.784019
+Lemma accuracy for all words: 0.804914
 Lemma accuracy for IV words:  0.990036
-Lemma accuracy for OOV words: 0.766296
+Lemma accuracy for OOV words: 0.096125

@@ -1,0 +1,43 @@
+TRAINING LOG
+Reading training data.
+Training label guesser.
+Reading development data.
+Setting label guesses.
+Average number of label candidates: 20.5989
+Estimating lemmatizer parameters.
+  Final dev acc: -100%
+Estimating tagger parameters.
+  Train pass 1
+
+    Dev acc: 97.8045%
+  Train pass 2
+
+    Dev acc: 98.9203%
+  Final dev acc: 98.9203%
+Storing model.
+
+real	2m19.684s
+user	2m18.349s
+sys	0m1.471s
+LOAD MODEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m1.987s
+user	0m1.878s
+sys	0m0.111s
+LABEL LOG
+../../bin/finnpos-label: Loading tagger.
+../../bin/finnpos-label: Reading from STDIN. Writing to STDOUT.
+
+real	0m2.683s
+user	0m2.544s
+sys	0m0.142s
+EVAL LOG
+Comparing omorfi_beam_0.999_config.tagged and ../../data/ftb/ftb.omorfi.test.feats (gold standard).
+Label accuracy for all words: 0.962426
+Label accuracy for IV words:  0.972776
+Label accuracy for OOV words: 0.9228
+Lemma accuracy for all words: 0.804977
+Lemma accuracy for IV words:  0.990115
+Lemma accuracy for OOV words: 0.096125
