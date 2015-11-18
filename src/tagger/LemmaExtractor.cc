@@ -78,7 +78,6 @@ void LemmaExtractor::train(const Data &train_data,
 			   const TaggerOptions &options)
 {
   extract_classes(train_data, le);
-
   PerceptronTrainer trainer(max_passes, 3, param_table, -1, *this, msg_out, options);
   trainer.train_lemmatizer(train_data, dev_data, *this, le);
 
@@ -297,20 +296,27 @@ unsigned int LemmaExtractor::get_class_number(const std::string &word,
 void LemmaExtractor::extract_classes(const Data &data,
 				     const LabelExtractor &e)
 {
+  int max_class = 0;
   for (unsigned int i = 0; i < data.size(); ++i)
     {
       for (unsigned int j = 0; j < data.at(i).size(); ++j)
 	{
 	  const Word &word = data.at(i).at(j);
 
-	  static_cast<void>(get_class_number(word.get_word_form(),
-					     word.get_lemma()));
+	  int klass = get_class_number(word.get_word_form(),
+				       word.get_lemma());
 	  
-	  lemma_lexicon[word.get_word_form() + "<W+LA>" + e.get_label_string(word.get_label())] = word.get_lemma();
+	  max_class = (max_class < klass ? klass : max_class);
+	  
+	  lemma_lexicon[word.get_word_form() + "<W+LA>" + 
+			e.get_label_string(word.get_label())] = 
+	    word.get_lemma();
 
 	  word_form_dict[word.get_word_form()] = 1;
 	}
     }
+  std::cerr << "Extracted " <<  max_class + 1 
+	    << " edit scripts." << std::endl;
 }
 
 void LemmaExtractor::set_class_candidates(const std::string &word,
@@ -400,7 +406,7 @@ Word * LemmaExtractor::extract_feats(const std::string &word_form,
        ++i)
     {
       feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i)) );
-      //      feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i) + " LABEL=" + label) );
+      feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i) + " LABEL=" + label) );
       //      feats.push_back( get_feat_id("SUFFIX=" + padded_word_form.substr(i) + " MAIN_LABEL=" + main_label) );
     }
 
@@ -413,13 +419,21 @@ Word * LemmaExtractor::extract_feats(const std::string &word_form,
 	{ break; }
 
       feats.push_back( get_feat_id("PREFIX=" + padded_word_form.substr(0,i)));
-      //      feats.push_back( get_feat_id("PREFIX=" + padded_word_form.substr(0,i) + " LABEL=" + label) );
+      feats.push_back( get_feat_id("PREFIX=" + padded_word_form.substr(0,i) + " LABEL=" + label) );
       //      feats.push_back( get_feat_id("PREFIX=" + padded_word_form.substr(0,i) + " MAIN_LABEL=" + main_label) );
     }
   
   feats.push_back(get_feat_id("INFIX4=" + padded_word_form.substr(0, padded_word_form.size() - 2).substr(padded_word_form.size() - 4)));
+  feats.push_back(get_feat_id("INFIX4=" + padded_word_form.substr(0, padded_word_form.size() - 2).substr(padded_word_form.size() - 4) 
+			      + " LABEL=" + label));
+
   feats.push_back(get_feat_id("INFIX5=" + padded_word_form.substr(0, padded_word_form.size() - 3).substr(padded_word_form.size() - 5)));
+  feats.push_back(get_feat_id("INFIX5=" + padded_word_form.substr(0, padded_word_form.size() - 3).substr(padded_word_form.size() - 5) 
+			      + " LABEL=" + label));
+
   feats.push_back(get_feat_id("INFIX6=" + padded_word_form.substr(0, padded_word_form.size() - 4).substr(padded_word_form.size() - 6)));
+  feats.push_back(get_feat_id("INFIX6=" + padded_word_form.substr(0, padded_word_form.size() - 4).substr(padded_word_form.size() - 6)
+			      + " LABEL=" + label));
 
   if (use_label)
     {
