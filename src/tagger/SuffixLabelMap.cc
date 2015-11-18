@@ -203,14 +203,20 @@ void SuffixLabelMap::set_guesses(const std::string &word_form,
       v.push_back(label_prob_pairs[i].second);
 
       tentative_mass += label_prob_pairs[i].first;
-      if (candidate_count != -1 and 
-	  static_cast<int>(i) >= candidate_count)
-	{ break; }
 
-      if (tentative_mass > mass and i > 20)
-	{ break; }      
+      if (candidate_count != -1)
+	{
+	  if (static_cast<int>(i) >= candidate_count)
+	    { break; }
+	}
+      else
+	{
+	  if (tentative_mass > mass and i > 20)
+	    { break; }      
+	}
     }
 }
+  
 
 bool SuffixLabelMap::operator==(const SuffixLabelMap &another) const
 {
