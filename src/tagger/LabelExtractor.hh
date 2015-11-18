@@ -37,6 +37,9 @@ class Data;
 class LabelExtractor
 {
  public:
+  static int all_time_word_count;
+  static int all_time_guess_count;
+
   LabelExtractor(unsigned int max_suffix_len=10);
   LabelExtractor(const TaggerOptions &tagger_options);
   virtual ~LabelExtractor(void);

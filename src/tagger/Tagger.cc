@@ -110,6 +110,10 @@ void Tagger::train(std::istream &train_in,
   train_data.set_label_guesses(label_extractor, 0, 
 			       tagger_options.guess_mass, 
 			       tagger_options.guesses);
+  std::cerr << "Average number of label candidates: "
+    << LabelExtractor::all_time_guess_count * 1.0 / 
+    LabelExtractor::all_time_word_count << std::endl;
+
   dev_data.set_label_guesses(label_extractor, 0, 
 			     tagger_options.guess_mass,
 			     tagger_options.guesses);

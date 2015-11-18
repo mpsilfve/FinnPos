@@ -33,6 +33,9 @@ std::string get_suffix(const std::string &wf, unsigned int length);
 #define PADDING "^^^^^^^^^^" 
 #define PADDING_LEN 10 
 
+int LabelExtractor::all_time_word_count = 0;
+int LabelExtractor::all_time_guess_count = 0;
+
 LabelExtractor::LabelExtractor(unsigned int max_suffix_len):
   max_suffix_len(max_suffix_len),
   max_guesses(50)
@@ -237,6 +240,8 @@ void LabelExtractor::set_label_candidates(const std::string &word_form,
       return;
     }
 
+  all_time_word_count += 1;
+
   if (use_lexicon and lexicon.count(word_form) != 0)
     {
       target.clear();
@@ -244,14 +249,21 @@ void LabelExtractor::set_label_candidates(const std::string &word_form,
       SubstringLabelMap::const_iterator it = lexicon.find(word_form);
       label_set.insert(it->second.begin(), it->second.end());
       target.assign(label_set.begin(), label_set.end());
+      all_time_guess_count += target.size();
       return;
     }
 
   if (use_lexicon and not target.empty())
-    { return; }
+    { 
+      all_time_guess_count += target.size();
+      return; 
+    }
 
   if (mass == 0 and not target.empty())
-    { return; }
+    {
+      all_time_guess_count += target.size(); 
+      return; 
+    }
 
   int wf_len = 
     (word_form.size() < max_suffix_len ? word_form.size() : max_suffix_len); 
@@ -274,6 +286,7 @@ void LabelExtractor::set_label_candidates(const std::string &word_form,
     {
       target.erase(target.begin() + max_guesses, target.end()); 
     }
+  all_time_guess_count += target.size();
 }
 
 void LabelExtractor::set_options(TaggerOptions &tagger_options)
