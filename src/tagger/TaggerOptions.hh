@@ -33,6 +33,9 @@ enum Inference
 enum Regularization
   { NONE, L1, L2 };
 
+enum Degree
+  { NODEG, ZEROTH, FIRST, SECOND };
+
 struct TaggerOptions
 {
   Estimator estimator;
@@ -52,6 +55,8 @@ struct TaggerOptions
   int guess_count_limit;
   bool use_unstructured_sublabels;
   bool use_structured_sublabels;
+  Degree sublabel_order;
+  Degree model_order;
   int guesses;
 
   TaggerOptions(void);
@@ -73,6 +78,8 @@ struct TaggerOptions
 		int guess_count_limit = 50,
 		bool use_unstructured_sublabels = 1,
 		bool use_structured_sublabels = 1,
+		Degree sublabel_order = FIRST,
+		Degree model_order = SECOND,
 		int guesses = -1);
   
   TaggerOptions(std::istream &in, unsigned int &counter);

@@ -26,6 +26,7 @@
 std::string strip(const std::string &str, const std::string &prefix); 
 Estimator get_estimator(const std::string &str);
 Inference get_inference(const std::string &str);
+Degree get_degree(const std::string &str);
 Regularization get_regularization(const std::string &str);
 unsigned int get_uint(const std::string &str); 
 unsigned int get_int(const std::string &str); 
@@ -60,6 +61,8 @@ const char * use_label_dictionary_id = "use_label_dictionary=";
 const char * guess_count_limit_id = "guess_count_limit=";
 const char * use_unstructured_sublabels_id = "use_unstructured_sublabels=";
 const char * use_structured_sublabels_id = "use_structured_sublabels=";
+const char * sublabel_order_id = "sublabel_order=";
+const char * model_order_id = "model_order=";
 const char * guesses_id = "guesses=";
 
 std::string despace(const std::string &line)
@@ -95,6 +98,8 @@ TaggerOptions::TaggerOptions(Estimator estimator,
 			     int guess_count_limit,
 			     bool use_unstructured_sublabels,
 			     bool use_structured_sublabels,
+			     Degree sublabel_order,
+			     Degree model_order,
 			     int guesses):
   estimator(estimator),
   inference(inference),
@@ -113,6 +118,8 @@ TaggerOptions::TaggerOptions(Estimator estimator,
   guess_count_limit(guess_count_limit),
   use_unstructured_sublabels(use_unstructured_sublabels),
   use_structured_sublabels(use_structured_sublabels),
+  sublabel_order(sublabel_order),
+  model_order(model_order),
   guesses(guesses)
 {
 }
@@ -135,6 +142,8 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
   guess_count_limit(50),
   use_unstructured_sublabels(1),
   use_structured_sublabels(1),
+  sublabel_order(FIRST),
+  model_order(SECOND),
   guesses(-1)
 {
   while (in)
@@ -159,6 +168,10 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
 	{ inference = get_inference(strip(line, inference_id)); }
       else if (line.find(suffix_length_id) != std::string::npos)
 	{ suffix_length = get_uint(strip(line, suffix_length_id)); }
+      else if (line.find(sublabel_order_id) != std::string::npos)
+	{ sublabel_order = get_degree(strip(line, sublabel_order_id)); }
+      else if (line.find(model_order_id) != std::string::npos)
+	{ model_order = get_degree(strip(line, model_order_id)); }
       else if (line.find(degree_id) != std::string::npos)
 	{ degree = get_uint(strip(line, degree_id)); }
       else if (line.find(max_train_passes_id) != std::string::npos)
@@ -182,16 +195,21 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
       else if (line.find(use_label_dictionary_id) != std::string::npos)
 	{ use_label_dictionary = get_uint(strip(line, use_label_dictionary_id)); }
       else if (line.find(guess_count_limit_id) != std::string::npos)
-	{ guess_count_limit = get_int(strip(line, guess_count_limit_id)); }
+	{ guess_count_limit = get_int(strip(line, guess_count_limit_id)); }      
       else if (line.find(use_unstructured_sublabels_id) != std::string::npos)
 	{ use_unstructured_sublabels = get_uint(strip(line, use_unstructured_sublabels_id)); }
       else if (line.find(use_structured_sublabels_id) != std::string::npos)
-	{ use_structured_sublabels = get_uint(strip(line, use_structured_sublabels_id)); }
+	{ use_structured_sublabels = get_uint(strip(line, use_structured_sublabels_id)); }     
       else if (line.find(guesses_id) != std::string::npos)
 	{ guesses = get_int(strip(line, guesses_id)); }
       else
 	{ throw SyntaxError(); }
     }
+
+  if (not use_unstructured_sublabels)
+    { sublabel_order = NODEG; }
+  else if (not use_structured_sublabels)
+    { sublabel_order = ZEROTH; }
 }
 
 void TaggerOptions::store(std::ostream &out) const
@@ -216,6 +234,8 @@ void TaggerOptions::store(std::ostream &out) const
   field_names.push_back("guess_count_limit");
   field_names.push_back("use_unstructured_sublabels");
   field_names.push_back("use_structured_sublabels");
+  field_names.push_back("sublabel_order");
+  field_names.push_back("model_order");
   field_names.push_back("guesses");
 
   fields.push_back(estimator);
@@ -235,6 +255,8 @@ void TaggerOptions::store(std::ostream &out) const
   fields.push_back(guess_count_limit);
   fields.push_back(use_unstructured_sublabels);
   fields.push_back(use_structured_sublabels);
+  fields.push_back(sublabel_order);
+  fields.push_back(model_order);
   fields.push_back(guesses);
 
   write_vector(out, field_names);
@@ -263,6 +285,10 @@ void TaggerOptions::load(std::istream &in, std::ostream &msg_out, bool reverse_b
 	{ inference = static_cast<Inference>(fields[i]); }
       else if (field_names[i] == "suffix_length")
 	{ suffix_length = static_cast<unsigned int>(fields[i]); }
+      else if (field_names[i] == "sublabel_order")
+	{ sublabel_order = static_cast<Degree>(fields[i]); }
+      else if (field_names[i] == "model_order")
+	{ model_order = static_cast<Degree>(fields[i]); }
       else if (field_names[i] == "degree")
 	{ degree = static_cast<unsigned int>(fields[i]); }
       else if (field_names[i] == "max_train_passes")
@@ -334,6 +360,20 @@ Inference get_inference(const std::string &str)
     { throw SyntaxError(); }
 }
 
+Degree get_degree(const std::string &str)
+{
+  if (str.find("NODEG") == 0)
+    { return NODEG; }
+  else if (str.find("ZEROTH") == 0)
+    { return ZEROTH; }
+  else if (str.find("FIRST") == 0)
+    { return FIRST; }
+  else if (str.find("SECOND") == 0)
+    { return SECOND; }
+  else
+    { throw SyntaxError(); }
+}
+
 Regularization get_regularization(const std::string &str)
 {
   if (str.find("NONE") == 0)
@@ -394,6 +434,8 @@ bool TaggerOptions::operator==(const TaggerOptions &another) const
      use_label_dictionary == another.use_label_dictionary and
      use_unstructured_sublabels == another.use_unstructured_sublabels and
      use_structured_sublabels == another.use_structured_sublabels and
+     sublabel_order == another.sublabel_order and
+     model_order == another.model_order and
      guess_count_limit == another.guess_count_limit and
      guesses == another.guesses)
 ;
@@ -433,6 +475,8 @@ int main(void)
 	 empty_options.guess_count_limit == 50 &&
 	 empty_options.use_unstructured_sublabels == 1 &&
 	 empty_options.use_structured_sublabels == 1 &&
+	 empty_options.sublabel_order == FIRST &&
+	 empty_options.model_order == SECOND &&
 	 empty_options.guesses == -1);
 
   counter = 0;
@@ -455,6 +499,8 @@ int main(void)
     "guess_count_limit=200\n"
     "use_unstructured_sublabels=0\n"
     "use_structured_sublabels=0\n"
+    "sublabel_order=ZEROTH\n"
+    "sublabel_order=FIRST\n"
     "guesses=10\n"
     ;
 
@@ -478,6 +524,8 @@ int main(void)
   assert(options.guess_count_limit == 200);
   assert(options.use_unstructured_sublabels == 0);
   assert(options.use_structured_sublabels == 0);
+  assert(options.sublabel_order == ZEROTH);
+  assert(options.model_order == FIRST);
   assert(options.guesses == 10);
   counter = 0;
 
