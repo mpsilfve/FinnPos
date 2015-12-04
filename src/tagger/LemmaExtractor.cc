@@ -508,7 +508,7 @@ unsigned int LemmaExtractor::get_lemma_candidate_class(const Word &w,
     {
       unsigned int klass = lemma_class_candidates[i];
       
-      float score = pt->get_all_unstruct(w, klass, 0);
+      float score = pt->get_all_unstruct(w, klass, NODEG);
 
       if (score > max_score)
 	{
