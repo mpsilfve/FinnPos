@@ -28,6 +28,7 @@
 #include "Word.hh"
 #include "TrellisCell.hh"
 #include "exceptions.hh"
+#include "TaggerOptions.hh"
 
 float expsumlog(float x, float y);
 
@@ -36,8 +37,8 @@ class TrellisColumn
  public:
   TrellisColumn(unsigned int boundary_label,
 		unsigned int beam_width = -1,
-		bool use_unstruct_sublabels = 1,
-		bool use_struct_sublabels = 1);
+		Degree sublabel_order = SECOND,
+		Degree model_order = SECOND);
 
   void set_ncol(TrellisColumn * pcol);
   void set_word(const Word &word, int plabels);
@@ -83,8 +84,8 @@ class TrellisColumn
   unsigned int label_count;
   unsigned int plabel_count;
 
-  bool use_unstruct_sublabels;
-  bool use_struct_sublabels;
+  Degree sublabel_order;
+  Degree model_order;
 
   std::vector<TrellisCell> cells;
   std::vector<TrellisCell*> cells_in_beam;
