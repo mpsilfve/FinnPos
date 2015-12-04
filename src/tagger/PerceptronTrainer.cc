@@ -38,8 +38,11 @@ PerceptronTrainer::PerceptronTrainer(unsigned int max_passes,
 				     std::ostream &msg_out,
 				     const TaggerOptions &options):  
   Trainer(max_passes, max_useless_passes, pt, label_extractor, lemma_extractor, msg_out, options),
-  iter(0), use_unstruct_sub_labels(options.use_unstructured_sublabels), 
-  use_struct_sub_labels(options.use_structured_sublabels)
+  iter(0), 
+  //use_unstruct_sub_labels(options.use_unstructured_sublabels), 
+  //use_struct_sub_labels(options.use_structured_sublabels)
+  sublabel_order(options.sublabel_order),
+  model_order(options.model_order)
 {
   pos_params = pt;
   neg_params = pt;
@@ -59,11 +62,11 @@ void PerceptronTrainer::train(const Data &train_data,
   dev_data_copy.unset_label();
 
   TrellisVector train_trellises;
-
+  std::cerr << "SL: " << sublabel_order << std::endl;
   for (unsigned int i = 0; i < train_data.size(); ++i)
-    {
+    {      
       train_trellises.push_back(new Trellis(train_data_copy.at(i), boundary_label,
-					    use_unstruct_sub_labels, use_struct_sub_labels));
+					    sublabel_order, model_order, beam));
 
       if (beam != static_cast<unsigned int>(-1))
 	{ train_trellises.back()->set_beam(beam); }
@@ -75,8 +78,7 @@ void PerceptronTrainer::train(const Data &train_data,
 
   for (unsigned int i = 0; i < dev_data.size(); ++i)
     {
-      dev_trellises.push_back(new Trellis(dev_data_copy.at(i), boundary_label, beam,
-					  use_unstruct_sub_labels, use_struct_sub_labels));
+      dev_trellises.push_back(new Trellis(dev_data_copy.at(i), boundary_label, sublabel_order, model_order, beam));
 
       if (beam != static_cast<float>(-1))
 	{ dev_trellises.back()->set_beam(beam); }
@@ -295,6 +297,7 @@ void PerceptronTrainer::train_lemmatizer(const Data &train_data,
   msg_out << "  Final dev acc: " << best_dev_acc * 100.0 << "%" << std::endl;
   
   pt = best_params;
+  pt.set_trained();
 }
 
 void PerceptronTrainer::update(const Sentence &gold_s, 
@@ -314,18 +317,26 @@ void PerceptronTrainer::update(const Sentence &gold_s,
       unsigned int ppsys_label = (i < 2 ? boundary_label : sys_s.at(i - 2).get_label());
 
       // Unstruct params.
-      pos_params.update_all_unstruct(gold_s.at(i), gold_label, 1, use_unstruct_sub_labels);
-      neg_params.update_all_unstruct(gold_s.at(i), gold_label, -iter, use_unstruct_sub_labels);
-      
-      pos_params.update_all_unstruct(sys_s.at(i), sys_label, -1, use_unstruct_sub_labels);
-      neg_params.update_all_unstruct(sys_s.at(i), sys_label, iter, use_unstruct_sub_labels);
-      
+      //pos_params.update_all_unstruct(gold_s.at(i), gold_label, 1, use_unstruct_sub_labels);
+      //neg_params.update_all_unstruct(gold_s.at(i), gold_label, -iter, use_unstruct_sub_labels);
+      pos_params.update_all_unstruct(gold_s.at(i), gold_label, 1, sublabel_order);
+      neg_params.update_all_unstruct(gold_s.at(i), gold_label, -iter, sublabel_order);
+
+      //pos_params.update_all_unstruct(sys_s.at(i), sys_label, -1, use_unstruct_sub_labels);
+      //neg_params.update_all_unstruct(sys_s.at(i), sys_label, iter, use_unstruct_sub_labels);
+      pos_params.update_all_unstruct(sys_s.at(i), sys_label, -1, sublabel_order);
+      neg_params.update_all_unstruct(sys_s.at(i), sys_label, iter, sublabel_order);
+
       // Struct params.
-      pos_params.update_all_struct_fw(ppgold_label, pgold_label, gold_label, 1, use_struct_sub_labels);
-      neg_params.update_all_struct_fw(ppgold_label, pgold_label, gold_label, -iter, use_struct_sub_labels);
+      //pos_params.update_all_struct_fw(ppgold_label, pgold_label, gold_label, 1, use_struct_sub_labels);
+      //neg_params.update_all_struct_fw(ppgold_label, pgold_label, gold_label, -iter, use_struct_sub_labels);
+      pos_params.update_all_struct_fw(ppgold_label, pgold_label, gold_label, 1, sublabel_order, model_order);
+      neg_params.update_all_struct_fw(ppgold_label, pgold_label, gold_label, -iter, sublabel_order, model_order);
       
-      pos_params.update_all_struct_fw(ppsys_label, psys_label, sys_label, -1, use_struct_sub_labels);
-      neg_params.update_all_struct_fw(ppsys_label, psys_label, sys_label, iter, use_struct_sub_labels);
+      //pos_params.update_all_struct_fw(ppsys_label, psys_label, sys_label, -1, use_struct_sub_labels);
+      //neg_params.update_all_struct_fw(ppsys_label, psys_label, sys_label, iter, use_struct_sub_labels);
+      pos_params.update_all_struct_fw(ppsys_label, psys_label, sys_label, -1, sublabel_order, model_order);
+      neg_params.update_all_struct_fw(ppsys_label, psys_label, sys_label, iter, sublabel_order, model_order);
     }
 }
 
@@ -340,11 +351,11 @@ void PerceptronTrainer::lemmatizer_update(const Word &w,
   static_cast<void>(lemma_e);
   static_cast<void>(label_e);
 
-  pos_params.update_all_unstruct(w, gold_class, 1, 0);
-  neg_params.update_all_unstruct(w, gold_class, -iter, 0);
+  pos_params.update_all_unstruct(w, gold_class, 1, NODEG);
+  neg_params.update_all_unstruct(w, gold_class, -iter, NODEG);
 
-  pos_params.update_all_unstruct(w, sys_class, -1, 0);
-  neg_params.update_all_unstruct(w, sys_class, iter, 0);
+  pos_params.update_all_unstruct(w, sys_class, -1, NODEG);
+  neg_params.update_all_unstruct(w, sys_class, iter, NODEG);
 
   //delete lemma_feature_word;
 }
@@ -352,7 +363,7 @@ void PerceptronTrainer::lemmatizer_update(const Word &w,
 void PerceptronTrainer::set_avg_params(void)
 {
   pt = pos_params;
-
+  
   ParamMap::iterator pt_it = pt.get_unstruct_begin();
   ParamMap::iterator pos_it = pos_params.get_unstruct_begin();
   ParamMap::iterator neg_it = neg_params.get_unstruct_begin();
@@ -403,10 +414,12 @@ public:
 
   void set_label_candidates(const std::string &word_form, 
 			    bool use_label_dict,
-			    unsigned int count, 
-			    LabelVector &target) const
+			    float mass, 
+			    LabelVector &target,
+			    int candidate_count) const
   {
     static_cast<void>(use_label_dict);
+    static_cast<void>(mass);
 
     if (word_form == BOUNDARY_WF)
       { 
@@ -416,7 +429,7 @@ public:
       {
 	target.clear();
 	
-	for (unsigned int i = 0; i < static_cast<unsigned int>(count); ++i)
+	for (unsigned int i = 0; i < static_cast<unsigned int>(candidate_count); ++i)
 	  {
 	    target.push_back(i);
 	  }
@@ -451,6 +464,8 @@ public:
 
 int main(void)
 {
+  TaggerOptions options;
+
   std::string contents("\n"
 		       "The\tWORD=The\tthe\tDT\t_\n"
 		       "dog\tWORD=dog\tdog\tNN\t_\n"
@@ -470,6 +485,7 @@ int main(void)
   Data train_data(in, 1, label_extractor, pt, 2);
   train_data.set_label_guesses(label_extractor, 
 			       0,
+			       0,
 			       label_extractor.label_count());
 
   Data dev_data(train_data);
@@ -477,21 +493,23 @@ int main(void)
 
   dev_data.set_label_guesses(label_extractor,
 			     0,
+			     0,
 			     label_extractor.label_count());
 
   dev_data_copy.unset_label();
 
   dev_data_copy.set_label_guesses(label_extractor, 
 				  0, 
+				  0,
 				  label_extractor.label_count());
 
   std::ostringstream null_out;
-  PerceptronTrainer trainer(5,3,pt, label_extractor.get_boundary_label(), SillyLemmaExtractor(), null_out);
+  PerceptronTrainer trainer(5,3,pt, label_extractor, SillyLemmaExtractor(), null_out, options);
   trainer.train(train_data, dev_data);
 
   for (unsigned int i = 0; i < dev_data_copy.size(); ++i)
     {
-      Trellis trellis(dev_data_copy.at(i), label_extractor.get_boundary_label());
+      Trellis trellis(dev_data_copy.at(i), label_extractor.get_boundary_label(), NODEG, SECOND);
       trellis.set_maximum_a_posteriori_assignment(pt);      
     }
 

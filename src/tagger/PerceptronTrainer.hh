@@ -58,8 +58,8 @@ private:
   ParamTable pos_params;
   ParamTable neg_params;
 
-  bool use_unstruct_sub_labels;
-  bool use_struct_sub_labels;
+  Degree sublabel_order;
+  Degree model_order;
 
   void update(const Sentence &gold_s, 
 	      const Sentence &sys_s);
