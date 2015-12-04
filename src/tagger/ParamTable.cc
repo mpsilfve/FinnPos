@@ -38,7 +38,8 @@ ParamTable &ParamTable::operator=(const ParamTable &another)
 {
   if (this == &another)
     { return *this; }
-  
+
+  update_count_map     = another.update_count_map;
   trained              = another.trained;
   feature_template_map = another.feature_template_map;
   unstruct_param_table = another.unstruct_param_table;
@@ -79,6 +80,11 @@ FeatureTemplateVector ParamTable::get_feat_templates
     }
 
   return feat_templates;
+}
+
+void ParamTable::p(void) const
+{
+  std::cerr << update_count_map.size() << std::endl;
 }
 
 long ParamTable::get_unstruct_param_id(unsigned int feature_template, 
@@ -170,6 +176,19 @@ std::string ParamTable::get_struct_feat_repr(long feat_id) const
     }
 }
 
+float ParamTable::get_filtered_param(int param_id, float param) const
+{
+  if (trained)
+    { return param; }
+  if (not filtering)
+    { return param; }
+  if (update_count_map.count(param_id) == 0)
+    { return 0; }
+  if (update_count_map.find(param_id)->second >= UD_TH)
+    { return param; }
+  return 0;
+}
+
 float ParamTable::get_unstruct(unsigned int feature_template, 
 			       unsigned int label) const
 {
@@ -180,21 +199,23 @@ float ParamTable::get_unstruct(unsigned int feature_template,
   if (it == unstruct_param_table.end())
     { return 0; }
 
-  return it->second;
+  return get_filtered_param(id, it->second);
 }
 
-float ParamTable::get_struct1(unsigned int label, bool sub_labels) const
+float ParamTable::get_struct1(unsigned int label, Degree sublabel_order) const
 {
   long id = get_struct_param_id(label);
   
   ParamMap::const_iterator it = struct_param_table.find(id);
 
-  if (it == struct_param_table.end())
-    { return 0; }
+  float res = 0;
+  
+  if (it != struct_param_table.end())
+    { 
+      res += get_filtered_param(id, it->second); 
+    }
 
-  float res = it->second;
-
-  if (label_extractor != 0 and sub_labels)
+  if (label_extractor != 0 and sublabel_order > NODEG)
     {
       const LabelVector &sub_labels = label_extractor->sub_labels(label);
 
@@ -204,14 +225,16 @@ float ParamTable::get_struct1(unsigned int label, bool sub_labels) const
 	  it = struct_param_table.find(id);
 
 	  if (it != struct_param_table.end())
-	    { res += it->second; };
+	    { 
+	      res += get_filtered_param(id, it->second);
+	    }
 	}
     }
 
   return res;
 }
 
-float ParamTable::get_struct2(unsigned int plabel, unsigned int label, bool use_sub_labels) const
+float ParamTable::get_struct2(unsigned int plabel, unsigned int label, Degree sublabel_order) const
 {
   long id = get_struct_param_id(plabel, label);
   
@@ -220,9 +243,11 @@ float ParamTable::get_struct2(unsigned int plabel, unsigned int label, bool use_
   float res = 0;
 
   if (it != struct_param_table.end())
-    { res += it->second; }
+    {
+      res += get_filtered_param(id, it->second);
+    }
 
-  if (label_extractor != 0 and use_sub_labels)
+  if (label_extractor != 0 and sublabel_order > ZEROTH)
     {
       const LabelVector &sub_labels = label_extractor->sub_labels(label);
       const LabelVector &psub_labels = label_extractor->sub_labels(plabel);
@@ -235,7 +260,9 @@ float ParamTable::get_struct2(unsigned int plabel, unsigned int label, bool use_
 	      it = struct_param_table.find(id);
 
 	      if (it != struct_param_table.end())
-		{ res += it->second; };
+		{ 
+		  res += get_filtered_param(id, it->second);
+		}
 	    }
 	}
     }
@@ -245,19 +272,48 @@ float ParamTable::get_struct2(unsigned int plabel, unsigned int label, bool use_
 
 float ParamTable::get_struct3(unsigned int pplabel,
 			      unsigned int plabel, 
-			      unsigned int label) const
+			      unsigned int label,
+			      Degree sublabel_order) const
 {
   long id = get_struct_param_id(pplabel, plabel, label);
   
   ParamMap::const_iterator it = struct_param_table.find(id);
 
-  if (it == struct_param_table.end())
-    { return 0; }
+  float total = 0;
 
-  return it->second;
+  if (it != struct_param_table.end())
+    { 
+      total += get_filtered_param(id, it->second);
+    }
+
+  if (label_extractor != 0 and sublabel_order > FIRST)
+    {
+      const LabelVector &sub_labels = label_extractor->sub_labels(label);
+      const LabelVector &psub_labels = label_extractor->sub_labels(plabel);
+      const LabelVector &ppsub_labels = label_extractor->sub_labels(pplabel);
+
+      for (unsigned int i = 0; i < ppsub_labels.size(); ++i)
+	{
+	  for (unsigned int j = 0; j < psub_labels.size(); ++j)
+	    {
+	      for (unsigned int k = 0; k < sub_labels.size(); ++k)
+		{
+		  size_t id = get_struct_param_id(ppsub_labels[i], psub_labels[j], sub_labels[k]);
+		  it = struct_param_table.find(id);
+
+		  if (it != struct_param_table.end())
+		    {
+		      total += get_filtered_param(id, it->second);
+		    }
+		}
+	    }
+	}
+    }
+  
+  return total;
 }
 
-float ParamTable::get_all_unstruct(const Word &word, unsigned int label, bool sub_labels) const
+float ParamTable::get_all_unstruct(const Word &word, unsigned int label, Degree sub_label_order) const
 {
   float res = 0;
 
@@ -266,7 +322,7 @@ float ParamTable::get_all_unstruct(const Word &word, unsigned int label, bool su
       res += get_unstruct(word.get_feature_template(i), label);
     }
 
-  if (sub_labels and label_extractor != 0)
+  if (sub_label_order > NODEG and label_extractor != 0)
     {
       const LabelVector &sub_labels = label_extractor->sub_labels(label);
       
@@ -285,23 +341,25 @@ float ParamTable::get_all_unstruct(const Word &word, unsigned int label, bool su
 float ParamTable::get_all_struct_fw(unsigned int pplabel, 
 				    unsigned int plabel, 
 				    unsigned int label,
-				    bool sub_labels) const
+				    Degree sublabel_order,
+				    Degree model_order) const
 {
   return 
-    get_struct3(pplabel, plabel, label) +
-    get_struct2(plabel, label, sub_labels) +
-    get_struct1(label, sub_labels);
+    (model_order >  FIRST ? get_struct3(pplabel, plabel, label, sublabel_order) : 0) +
+    (model_order > ZEROTH ? get_struct2(plabel, label, sublabel_order) : 0) +
+    get_struct1(label, sublabel_order);
 }
 
 float ParamTable::get_all_struct_bw(unsigned int pplabel, 
 				    unsigned int plabel, 
 				    unsigned int label,
-				    bool sub_labels) const
+				    Degree sublabel_order,
+				    Degree model_order) const
 {
   return 
-    get_struct3(pplabel, plabel, label) +
-    get_struct2(plabel, label, sub_labels) +
-    get_struct1(label, sub_labels);
+    (model_order > FIRST ? get_struct3(pplabel, plabel, label, sublabel_order) : 0) +
+    (model_order > ZEROTH ? get_struct2(plabel, label, sublabel_order) : 0) +
+    get_struct1(label, sublabel_order);
 }
 
 void ParamTable::update_unstruct(unsigned int feature_template, 
@@ -313,19 +371,25 @@ void ParamTable::update_unstruct(unsigned int feature_template,
   if (unstruct_param_table.count(id) == 0)
     { unstruct_param_table[id] = 0; }
 
+  if (filtering)
+    { ++update_count_map[id]; }
+
   unstruct_param_table[get_unstruct_param_id(feature_template, label)] += ud;
 }
 
-void ParamTable::update_struct1(unsigned int label, float ud, bool use_sub_labels)
+void ParamTable::update_struct1(unsigned int label, float ud, Degree sublabel_order)
 {
   size_t id = get_struct_param_id(label);
   
   if (struct_param_table.count(id) == 0)
     { struct_param_table[id] = 0; }
 
+  if (filtering)
+    { ++update_count_map[id]; }
+
   struct_param_table[get_struct_param_id(label)] += ud;
 
-  if (label_extractor != 0 and use_sub_labels)
+  if (label_extractor != 0 and sublabel_order > NODEG)
     {
       const LabelVector &sub_labels = label_extractor->sub_labels(label);
 
@@ -344,16 +408,19 @@ void ParamTable::update_struct1(unsigned int label, float ud, bool use_sub_label
 void ParamTable::update_struct2(unsigned int plabel, 
 				unsigned int label, 
 				float ud,
-				bool use_sub_labels)
+				Degree sublabel_order)
 {
   size_t id = get_struct_param_id(plabel, label);
   
   if (struct_param_table.count(id) == 0)
     { struct_param_table[id] = 0; }
 
+  if (filtering)
+    { ++update_count_map[id]; }
+
   struct_param_table[get_struct_param_id(plabel, label)] += ud;
 
-  if (label_extractor != 0 and use_sub_labels)
+  if (label_extractor != 0 and sublabel_order > ZEROTH)
     {
       const LabelVector &sub_labels = label_extractor->sub_labels(label);
       const LabelVector &psub_labels = label_extractor->sub_labels(plabel);
@@ -375,40 +442,75 @@ void ParamTable::update_struct2(unsigned int plabel,
 }
 
 void ParamTable::update_struct3(unsigned int pplabel, 
-			       unsigned int plabel, 
-			       unsigned int label, 
-			       float ud)
+				unsigned int plabel, 
+				unsigned int label, 
+				float ud,
+				Degree sublabel_order)
 {
   size_t id = get_struct_param_id(pplabel, plabel, label);
   
   if (struct_param_table.count(id) == 0)
     { struct_param_table[id] = 0; }
 
+  if (filtering)
+    { ++update_count_map[id]; }
+
   struct_param_table[get_struct_param_id(pplabel, plabel, label)] += ud;
+
+  if (label_extractor != 0 and sublabel_order > FIRST)
+    {
+      const LabelVector &sub_labels = label_extractor->sub_labels(label);
+      const LabelVector &psub_labels = label_extractor->sub_labels(plabel);
+      const LabelVector &ppsub_labels = label_extractor->sub_labels(pplabel);
+
+      for (unsigned int i = 0; i < ppsub_labels.size(); ++i)
+	{
+	  for (unsigned int j = 0; j < psub_labels.size(); ++j)
+	    {
+	      for (unsigned int k = 0; k < sub_labels.size(); ++k)
+		{
+		  size_t id = get_struct_param_id(ppsub_labels[i], psub_labels[j], sub_labels[k]);
+		  
+		  if (struct_param_table.count(id) == 0)
+		    { struct_param_table[id] = 0; }
+
+		  struct_param_table[get_struct_param_id(ppsub_labels[i], 
+							 psub_labels[j],
+							 sub_labels[k])] += ud;
+		}
+	    }
+	}
+    }
 }
 
-void ParamTable::update_all_struct_fw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, bool sub_labels)
+void ParamTable::update_all_struct_fw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, Degree sublabel_order,
+				      Degree model_order)
 {
-  update_struct1(label, update, sub_labels);
-  update_struct2(plabel, label, update, sub_labels);
-  update_struct3(pplabel, plabel, label, update); 
+  update_struct1(label, update, sublabel_order);
+  if (model_order > ZEROTH)
+    update_struct2(plabel, label, update, sublabel_order);
+  if (model_order > FIRST)
+    update_struct3(pplabel, plabel, label, update, sublabel_order); 
 }
 
-void ParamTable::update_all_struct_bw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, bool sub_labels)
+void ParamTable::update_all_struct_bw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, Degree sublabel_order,
+				      Degree model_order)
 {
-  update_struct3(pplabel, plabel, label, update);
-  update_struct2(plabel, label, update, sub_labels);
-  update_struct1(label, update, sub_labels);
+  if (model_order > FIRST)
+    update_struct3(pplabel, plabel, label, update, sublabel_order);
+  if (model_order > ZEROTH)
+    update_struct2(plabel, label, update, sublabel_order);
+  update_struct1(label, update, sublabel_order);
 }
 
-void ParamTable::update_all_unstruct(const Word &word, unsigned int label, float update, bool sub_label)
+void ParamTable::update_all_unstruct(const Word &word, unsigned int label, float update, Degree sub_label_order)
 {
   for (unsigned int i = 0; i < word.get_feature_template_count(); ++i)
     {
       update_unstruct(word.get_feature_template(i), label, update);
     }
 
-  if (label_extractor != 0 and sub_label)
+  if (label_extractor != 0 and sub_label_order > NODEG)
     {
       const LabelVector &sub_labels = label_extractor->sub_labels(label);
       
@@ -448,13 +550,22 @@ void ParamTable::store(std::ostream &out) const
 {
   write_val(out, trained);
   write_map(out, feature_template_map);
-  write_map(out, unstruct_param_table);
-  write_map(out, struct_param_table);
+
+  if (filtering)
+    { write_filtered_map(out, unstruct_param_table, update_count_map, UD_TH, 1); }
+  else
+    { write_map(out, unstruct_param_table, 1); }
+
+  if (filtering)
+    { write_filtered_map(out, struct_param_table, update_count_map, UD_TH, 1); }
+  else
+    { write_map(out, struct_param_table, 1); }
 }
 
 void ParamTable::load(std::istream &in, bool reverse_bytes)
 {
   read_val<bool>(in, trained, reverse_bytes);
+  std::cerr << trained << std::endl;
   read_map(in, feature_template_map, reverse_bytes);
   read_map(in, unstruct_param_table, reverse_bytes);
   read_map(in, struct_param_table, reverse_bytes);
@@ -549,29 +660,29 @@ int main(void)
   pt.update_unstruct(pt.get_feat_template("FOO"), 0, 1);
   assert(pt.get_unstruct(pt.get_feat_template("FOO"), 0) == 2);
 
-  assert(pt.get_struct1(0,0) == 0);
-  pt.update_struct1(0, 1,0);
-  assert(pt.get_struct1(0, 0) == 1);
+  assert(pt.get_struct1(0,NODEG) == 0);
+  pt.update_struct1(0, 1,NODEG);
+  assert(pt.get_struct1(0, NODEG) == 1);
 
-  assert(pt.get_struct1(1,0) == 0);
-  pt.update_struct1(1, 2,0);
-  assert(pt.get_struct1(1,0) == 2);
+  assert(pt.get_struct1(1,NODEG) == 0);
+  pt.update_struct1(1, 2,NODEG);
+  assert(pt.get_struct1(1,NODEG) == 2);
 
-  assert(pt.get_struct2(0, 0, false) == 0);
-  pt.update_struct2(0, 0, 1, false);
-  assert(pt.get_struct2(0, 0, false) == 1);
+  assert(pt.get_struct2(0, 0, NODEG) == 0);
+  pt.update_struct2(0, 0, 1, NODEG);
+  assert(pt.get_struct2(0, 0, NODEG) == 1);
 
-  assert(pt.get_struct2(0, 1, false) == 0);
-  pt.update_struct2(0, 1, 2, false);
-  assert(pt.get_struct2(0, 1, false) == 2);
+  assert(pt.get_struct2(0, 1, NODEG) == 0);
+  pt.update_struct2(0, 1, 2, NODEG);
+  assert(pt.get_struct2(0, 1, NODEG) == 2);
 
-  assert(pt.get_struct3(0, 0, 0) == 0);
-  pt.update_struct3(0, 0, 0, 1);
-  assert(pt.get_struct3(0, 0, 0) == 1);
+  assert(pt.get_struct3(0, 0, 0, NODEG) == 0);
+  pt.update_struct3(0, 0, 0, 1, NODEG);
+  assert(pt.get_struct3(0, 0, 0, NODEG) == 1);
 
-  assert(pt.get_struct3(0, 1, 0) == 0);
-  pt.update_struct3(0, 1, 0, 2);
-  assert(pt.get_struct3(0, 1, 0) == 2);  
+  assert(pt.get_struct3(0, 1, 0, NODEG) == 0);
+  pt.update_struct3(0, 1, 0, 2, NODEG);
+  assert(pt.get_struct3(0, 1, 0, NODEG) == 2);  
 
   std::ostringstream pt_out;
   pt.store(pt_out);

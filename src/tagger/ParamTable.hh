@@ -27,12 +27,15 @@
 #include "UnorderedMapSet.hh"
 #include <vector>
 #include <string>
+#include "TaggerOptions.hh"
 
 #include "io.hh"
 
 typedef std::vector<unsigned int> FeatureTemplateVector;
 
 const long MAX_LABEL = 50000;
+const int UD_TH = 5;
+const bool filtering = 0;
 
 class Word;
 class LabelExtractor;
@@ -50,22 +53,22 @@ public:
   FeatureTemplateVector get_feat_templates(StringVector &feat_template_strings);
 
   float get_unstruct(unsigned int feature_template, unsigned int label) const;
-  float get_struct1(unsigned int label, bool sub_labels) const;
-  float get_struct2(unsigned int plabel, unsigned int label, bool sub_labels) const;
-  float get_struct3(unsigned int pplabel, unsigned int plabel, unsigned int label) const;
+  float get_struct1(unsigned int label, Degree sublabel_order) const;
+  float get_struct2(unsigned int plabel, unsigned int label, Degree sublabel_order) const;
+  float get_struct3(unsigned int pplabel, unsigned int plabel, unsigned int label, Degree sublabel_order) const;
 
-  float get_all_struct_fw(unsigned int pplabel, unsigned int plabel, unsigned int label, bool sub_labels = 1) const;
-  float get_all_struct_bw(unsigned int pplabel, unsigned int plabel, unsigned int label, bool sub_labels = 1) const;
-  float get_all_unstruct(const Word &word, unsigned int label, bool sub_labels = 1) const;
+  float get_all_struct_fw(unsigned int pplabel, unsigned int plabel, unsigned int label, Degree sublabel_order, Degree model_order) const;
+  float get_all_struct_bw(unsigned int pplabel, unsigned int plabel, unsigned int label, Degree sublabel_order, Degree model_order) const;
+  float get_all_unstruct(const Word &word, unsigned int label, Degree sublabel_order) const;
 
-  void update_all_struct_fw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, bool sub_labels = 1);
-  void update_all_struct_bw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, bool sub_labels = 1);
-  void update_all_unstruct(const Word &word, unsigned int label, float update, bool sub_labels = 1);
+  void update_all_struct_fw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, Degree sublabel_order, Degree model_order);
+  void update_all_struct_bw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, Degree sublabel_order, Degree model_order);
+  void update_all_unstruct(const Word &word, unsigned int label, float update, Degree sublabel_order);
 
   void update_unstruct(unsigned int feature_template, unsigned int label, float ud);
-  void update_struct1(unsigned int label, float ud, bool sub_labels);
-  void update_struct2(unsigned int plabel, unsigned int label, float ud, bool sub_labels);
-  void update_struct3(unsigned int pplabel, unsigned int plabel, unsigned int label, float ud);
+  void update_struct1(unsigned int label, float ud, Degree sublabel_order);
+  void update_struct2(unsigned int plabel, unsigned int label, float ud, Degree sublabel_order);
+  void update_struct3(unsigned int pplabel, unsigned int plabel, unsigned int label, float ud, Degree sublabel_order);
 
   ParamMap::iterator get_unstruct_begin(void);
   ParamMap::iterator get_struct_begin(void);
@@ -87,7 +90,9 @@ public:
 private:
   typedef std::unordered_map<std::string, unsigned int> FeatureTemplateMap;
   typedef std::vector<std::string> InvFeatureTemplateMap;
+  typedef std::unordered_map<long, int> UpdateCountMap;
 
+  UpdateCountMap update_count_map;
   const LabelExtractor * label_extractor;
   bool trained;
   FeatureTemplateMap feature_template_map;
@@ -102,6 +107,8 @@ private:
   std::string get_unstruct_feat_repr(long feat_id,
 				     const InvFeatureTemplateMap & m) const;
   std::string get_struct_feat_repr(long feat_id) const;
+
+  float get_filtered_param(int param_id, float param) const;
 
   friend std::ostream &operator<<(std::ostream &out, const ParamTable &table);
 };
