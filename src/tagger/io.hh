@@ -255,14 +255,56 @@ std::unordered_map<T, U> &read_map(std::istream &in,
  * std::string and numerical types only! Throws WriteFailed.
  */
 template<class T, class U> void write_map(std::ostream &out,
-					  const std::unordered_map<T, U> &m)
+					  const std::unordered_map<T, U> &m,
+					  bool print = 0)
 {
+  if (print)
+    { std::cerr << "Writing " << m.size() << " parameters." << std::endl; }
+
   write_val<unsigned int>(out, m.size());
 
   for (typename std::unordered_map<T, U>::const_iterator it = m.begin();
        it != m.end();
        ++it)
     {
+      write_val<T>(out, it->first);
+      write_val<U>(out, it->second);
+    }
+}
+
+/**
+ * @brief Write map @p m to stream @p out. Instantiate with
+ * std::string and numerical types only! Throws WriteFailed.
+ */
+template<class T, class U> void write_filtered_map(std::ostream &out,
+						   const std::unordered_map<T, U> &m,
+						   const std::unordered_map<T, int> &counter,
+						   int th,
+						   bool print = 0)
+{
+  size_t size = 0;
+
+  for (typename std::unordered_map<T, U>::const_iterator it = m.begin();
+       it != m.end();
+       ++it)
+    { 
+      if (counter.count(it->first) > 0 && counter.find(it->first)->second > th)
+	{ ++size; }
+    }
+
+  if (print)
+    { std::cerr << "Writing " << size << " parameters." << std::endl; }
+
+  write_val<unsigned int>(out, size);
+
+  for (typename std::unordered_map<T, U>::const_iterator it = m.begin();
+       it != m.end();
+       ++it)
+    {
+      if (not (counter.count(it->first) > 0 && 
+	       counter.find(it->first)->second > th))
+	{ continue; }
+
       write_val<T>(out, it->first);
       write_val<U>(out, it->second);
     }
