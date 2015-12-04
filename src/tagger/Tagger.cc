@@ -160,8 +160,8 @@ void Tagger::evaluate(std::istream &in)
     {
       trellises.push_back(new Trellis(data_copy.at(i), 
 				      label_extractor.get_boundary_label(), 
-				      tagger_options.use_unstructured_sublabels,
-				      tagger_options.use_structured_sublabels,
+				      tagger_options.sublabel_order,
+				      tagger_options.model_order,
 				      tagger_options.beam));
     }
 
@@ -203,8 +203,8 @@ void Tagger::label(std::istream &in)
     {
       trellises.push_back(new Trellis(data.at(i), 
 				      label_extractor.get_boundary_label(), 
-				      tagger_options.use_unstructured_sublabels,
-				      tagger_options.use_structured_sublabels,
+				      tagger_options.sublabel_order,
+				      tagger_options.model_order,
 				      tagger_options.beam));
     }
 
@@ -255,8 +255,8 @@ void Tagger::label_stream(std::istream &in)
 			  tagger_options.guesses);
 
       Trellis trellis(s, label_extractor.get_boundary_label(), 
-		      tagger_options.use_unstructured_sublabels,
-		      tagger_options.use_structured_sublabels,
+		      tagger_options.sublabel_order,
+		      tagger_options.model_order,
 		      tagger_options.beam);
       trellis.set_beam_mass(tagger_options.beam_mass);
       trellis.set_maximum_a_posteriori_assignment(param_table);      
@@ -304,7 +304,9 @@ void Tagger::store(std::ostream &out) const
 
   tagger_options.store(out);
   label_extractor.store(out);
+  msg_out << "Storing lemmatizer" << std::endl;
   lemma_extractor.store(out);
+  msg_out << "Storing tagger parameters" << std::endl;
   param_table.store(out);
 }
 
