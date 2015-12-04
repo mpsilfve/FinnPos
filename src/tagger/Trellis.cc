@@ -47,15 +47,15 @@ void normalize(std::vector<float> &v)
 
 Trellis::Trellis(Sentence &sent, 
 		 unsigned int boundary_label,
-		 bool use_unstruct_sublabels, 
-		 bool use_struct_sublabels,
+		 Degree sublabel_order,
+		 Degree model_order,
 		 unsigned int beam):
   s(&sent),
   marginals_set(0),
   bw(boundary_label),
   beam(beam),
-  use_unstruct_sublabels(use_unstruct_sublabels),
-  use_struct_sublabels(use_struct_sublabels)
+  sublabel_order(sublabel_order),
+  model_order(model_order)
 {
   reserve(sent.size(), boundary_label);
 
@@ -217,8 +217,8 @@ void Trellis::set_trigram_marginals(const ParamTable &pt)
 		  trigram_marginals[i][get_index(i, l, pl, ppl)] =
 		    trellis[i - 1].get_fw(ppl, pl) + 
 		    trellis[i].get_bw(pl, l) + 
-		    pt.get_all_struct_fw(pplabel, plabel, label) +
-		    pt.get_all_unstruct(s->at(i), label);
+		    pt.get_all_struct_fw(pplabel, plabel, label, sublabel_order, model_order) +
+		    pt.get_all_unstruct(s->at(i), label, sublabel_order);
 		}
 	    }
 	}
@@ -298,8 +298,8 @@ void Trellis::reserve(unsigned int n, unsigned int boundary_label)
 		 n, 
 		 TrellisColumn(boundary_label, 
 			       beam,
-			       use_unstruct_sublabels,
-			       use_struct_sublabels));
+			       sublabel_order,
+			       model_order));
 }
 
 unsigned int Trellis::get_index(unsigned int position, 
@@ -326,12 +326,12 @@ unsigned int Trellis::get_index(unsigned int position,
 void populate(Data &data, 
 	      TrellisVector &v,
 	      unsigned int boundary_label, 
-	      bool use_unstruct_sublabels,
-	      bool use_struct_sublabels,
+	      Degree sublabel_order,
+	      Degree model_order,
 	      unsigned int beam)
 {
   for (unsigned int i = 0; i < data.size(); ++i)
-    { v.push_back(new Trellis(data.at(i), boundary_label, use_unstruct_sublabels, use_struct_sublabels, beam)); }
+    { v.push_back(new Trellis(data.at(i), boundary_label, sublabel_order, model_order, beam)); }
 }
 
 #else // TEST_Trellis_cc
