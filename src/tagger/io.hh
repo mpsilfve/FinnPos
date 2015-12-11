@@ -276,6 +276,46 @@ template<class T, class U> void write_map(std::ostream &out,
  * @brief Write map @p m to stream @p out. Instantiate with
  * std::string and numerical types only! Throws WriteFailed.
  */
+template<class T, class U> void write_avg_filtered_map(std::ostream &out, 
+						       const std::unordered_map<T, U> &m,
+						       float threshold,
+						       int train_iters,
+						       bool print = 0)
+{
+  size_t size = 0;
+
+  for (typename std::unordered_map<T, U>::const_iterator it = m.begin();
+       it != m.end();
+       ++it)
+    { 
+      if (fabs(it->second)/train_iters < threshold)
+	{ continue; }
+
+      ++size;
+    }
+
+  if (print)
+    { std::cerr << "Writing " << size << " parameters." << std::endl; }
+
+  write_val<unsigned int>(out, size);
+
+  for (typename std::unordered_map<T, U>::const_iterator it = m.begin();
+       it != m.end();
+       ++it)
+    {
+      if (fabs(it->second)/train_iters < threshold)
+	{ continue; }
+
+      write_val<T>(out, it->first);
+      write_val<U>(out, it->second);
+    }
+}
+
+
+/**
+ * @brief Write map @p m to stream @p out. Instantiate with
+ * std::string and numerical types only! Throws WriteFailed.
+ */
 template<class T, class U> void write_filtered_map(std::ostream &out,
 						   const std::unordered_map<T, U> &m,
 						   const std::unordered_map<T, int> &counter,
@@ -288,8 +328,10 @@ template<class T, class U> void write_filtered_map(std::ostream &out,
        it != m.end();
        ++it)
     { 
-      if (counter.count(it->first) > 0 && counter.find(it->first)->second > th)
-	{ ++size; }
+      if (counter.count(it->first) == 0 or 
+	  counter.find(it->first)->second < th)
+	{ continue; }
+      ++size;
     }
 
   if (print)
@@ -301,9 +343,12 @@ template<class T, class U> void write_filtered_map(std::ostream &out,
        it != m.end();
        ++it)
     {
-      if (not (counter.count(it->first) > 0 && 
-	       counter.find(it->first)->second > th))
-	{ continue; }
+      
+      if (counter.count(it->first) == 0 or 
+	  counter.find(it->first)->second < th)
+	{ 
+	  continue; 
+	}
 
       write_val<T>(out, it->first);
       write_val<U>(out, it->second);
