@@ -37,7 +37,7 @@ enum Degree
   { NODEG, ZEROTH, FIRST, SECOND };
 
 enum Filtering
-  { AVG_VALUE, UPDATE_COUNT };
+  { AVG_VALUE, UPDATE_COUNT, NO_FILTER };
 
 struct TaggerOptions
 {
@@ -61,8 +61,8 @@ struct TaggerOptions
   Degree sublabel_order;
   Degree model_order;
   int guesses;
-  float update_threshold;
-  Filtering filtering;
+  float param_threshold;
+  Filtering filter_type;
 
   TaggerOptions(void);
 
@@ -86,8 +86,8 @@ struct TaggerOptions
 		Degree sublabel_order = FIRST,
 		Degree model_order = SECOND,
 		int guesses = -1,
-		float update_threshold = -1,
-		Filtering filtering = AVG_VALUE);
+		float param_threshold = -1,
+		Filtering filter_type = NO_FILTER);
   
   TaggerOptions(std::istream &in, unsigned int &counter);
 

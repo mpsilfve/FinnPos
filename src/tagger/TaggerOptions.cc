@@ -26,7 +26,7 @@
 std::string strip(const std::string &str, const std::string &prefix); 
 Estimator get_estimator(const std::string &str);
 Inference get_inference(const std::string &str);
-Filtering get_filtering(const std::string &str);
+Filtering get_filter_type(const std::string &str);
 Degree get_degree(const std::string &str);
 Regularization get_regularization(const std::string &str);
 unsigned int get_uint(const std::string &str); 
@@ -47,7 +47,7 @@ bool float_eq(float f1, float f2)
 
 const char * estimator_id = "estimator=";
 const char * inference_id = "inference=";
-const char * filtering_id = "filtering=";
+const char * filter_type_id = "filter_type=";
 const char * suffix_length_id = "suffix_length=";
 const char * degree_id = "degree=";
 const char * max_train_passes_id = "max_train_passes=";
@@ -66,7 +66,7 @@ const char * use_structured_sublabels_id = "use_structured_sublabels=";
 const char * sublabel_order_id = "sublabel_order=";
 const char * model_order_id = "model_order=";
 const char * guesses_id = "guesses=";
-const char * update_threshold_id = "update_threshold=";
+const char * param_threshold_id = "param_threshold=";
 
 std::string despace(const std::string &line)
 {
@@ -104,8 +104,8 @@ TaggerOptions::TaggerOptions(Estimator estimator,
 			     Degree sublabel_order,
 			     Degree model_order,
 			     int guesses,
-			     float update_threshold,
-			     Filtering filtering):
+			     float param_threshold,
+			     Filtering filter_type):
   estimator(estimator),
   inference(inference),
   suffix_length(suffix_length),
@@ -126,8 +126,8 @@ TaggerOptions::TaggerOptions(Estimator estimator,
   sublabel_order(sublabel_order),
   model_order(model_order),
   guesses(guesses),
-  update_threshold(update_threshold),
-  filtering(filtering)
+  param_threshold(param_threshold),
+  filter_type(filter_type)
 {
 }
 
@@ -152,8 +152,8 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
   sublabel_order(FIRST),
   model_order(SECOND),
   guesses(-1),
-  update_threshold(-1),
-  filtering(AVG_VALUE)
+  param_threshold(-1),
+  filter_type(NO_FILTER)
 {
   while (in)
     {
@@ -175,8 +175,8 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
 	{ estimator = get_estimator(strip(line, estimator_id)); }
       else if (line.find(inference_id) != std::string::npos)
 	{ inference = get_inference(strip(line, inference_id)); }
-      else if (line.find(filtering_id) != std::string::npos)
-	{ filtering = get_filtering(strip(line, filtering_id)); }
+      else if (line.find(filter_type_id) != std::string::npos)
+	{ filter_type = get_filter_type(strip(line, filter_type_id)); }
       else if (line.find(suffix_length_id) != std::string::npos)
 	{ suffix_length = get_uint(strip(line, suffix_length_id)); }
       else if (line.find(sublabel_order_id) != std::string::npos)
@@ -213,8 +213,8 @@ TaggerOptions::TaggerOptions(std::istream &in, unsigned int &counter):
 	{ use_structured_sublabels = get_uint(strip(line, use_structured_sublabels_id)); }     
       else if (line.find(guesses_id) != std::string::npos)
 	{ guesses = get_int(strip(line, guesses_id)); }
-      else if (line.find(update_threshold_id) != std::string::npos)
-	{ update_threshold = get_float(strip(line, update_threshold_id)); }
+      else if (line.find(param_threshold_id) != std::string::npos)
+	{ param_threshold = get_float(strip(line, param_threshold_id)); }
       else
 	{ throw SyntaxError(); }
     }
@@ -250,8 +250,8 @@ void TaggerOptions::store(std::ostream &out) const
   field_names.push_back("sublabel_order");
   field_names.push_back("model_order");
   field_names.push_back("guesses");
-  field_names.push_back("update_threshold");
-  field_names.push_back("filtering");
+  field_names.push_back("param_threshold");
+  field_names.push_back("filter_type");
 
   fields.push_back(estimator);
   fields.push_back(inference);
@@ -273,8 +273,8 @@ void TaggerOptions::store(std::ostream &out) const
   fields.push_back(sublabel_order);
   fields.push_back(model_order);
   fields.push_back(guesses);
-  fields.push_back(update_threshold);
-  fields.push_back(filtering);
+  fields.push_back(param_threshold);
+  fields.push_back(filter_type);
 
   write_vector(out, field_names);
   write_vector(out, fields);
@@ -300,8 +300,8 @@ void TaggerOptions::load(std::istream &in, std::ostream &msg_out, bool reverse_b
 	{ estimator = static_cast<Estimator>(fields[i]); }
       else if (field_names[i] == "inference")
 	{ inference = static_cast<Inference>(fields[i]); }
-      else if (field_names[i] == "filtering")
-	{ filtering = static_cast<Filtering>(fields[i]); }
+      else if (field_names[i] == "filter_type")
+	{ filter_type = static_cast<Filtering>(fields[i]); }
       else if (field_names[i] == "suffix_length")
 	{ suffix_length = static_cast<unsigned int>(fields[i]); }
       else if (field_names[i] == "sublabel_order")
@@ -340,8 +340,8 @@ void TaggerOptions::load(std::istream &in, std::ostream &msg_out, bool reverse_b
 	{ use_structured_sublabels = static_cast<unsigned int>(fields[i]); }
       else if (field_names[i] == "guesses")
 	{ guesses = static_cast<int>(fields[i]); }
-      else if (field_names[i] == "update_threshold")
-	{ update_threshold = static_cast<float>(fields[i]); }
+      else if (field_names[i] == "param_threshold")
+	{ param_threshold = static_cast<float>(fields[i]); }
       else
 	{
 	  msg_out << "Found unknown parameter name " 
@@ -381,11 +381,13 @@ Inference get_inference(const std::string &str)
     { throw SyntaxError(); }
 }
 
-Filtering get_filtering(const std::string &str)
+Filtering get_filter_type(const std::string &str)
 {
   if (str.find("AVG_VALUE") == 0)
     { return AVG_VALUE; }
   else if (str.find("UPDATE_COUNT") == 0)
+    { return UPDATE_COUNT; }
+  else if (str.find("NO_FILTER") == 0)
     { return UPDATE_COUNT; }
   else
     { throw SyntaxError(); }
@@ -469,8 +471,8 @@ bool TaggerOptions::operator==(const TaggerOptions &another) const
      model_order == another.model_order and
      guess_count_limit == another.guess_count_limit and
      guesses == another.guesses and
-     update_threshold == another.update_threshold and
-     filtering == another.filtering)
+     param_threshold == another.param_threshold and
+     filter_type == another.filter_type)
 ;
 }
 
@@ -511,8 +513,8 @@ int main(void)
 	 empty_options.sublabel_order == FIRST &&
 	 empty_options.model_order == SECOND &&
 	 empty_options.guesses == -1 &&
-	 empty_options.update_threshold == -1 and
-	 empty_options.filtering == AVG_VALUE
+	 empty_options.param_threshold == -1 and
+	 empty_options.filter_type == NO_FILTER
 	 );
 
   counter = 0;
@@ -536,8 +538,8 @@ int main(void)
     "sublabel_order=ZEROTH\n"
     "model_order=FIRST\n"
     "guesses=10\n"
-    "update_threshold=11\n"
-    "filtering=UPDATE_COUNT\n"
+    "param_threshold=11\n"
+    "filter_type=UPDATE_COUNT\n"
     ;
 
   std::istringstream opt_file(opt_str);
@@ -563,8 +565,8 @@ int main(void)
   assert(options.sublabel_order == ZEROTH);
   assert(options.model_order == FIRST);
   assert(options.guesses == 10);
-  assert(options.update_threshold == 11);
-  assert(options.filtering == UPDATE_COUNT);
+  assert(options.param_threshold == 11);
+  assert(options.filter_type == UPDATE_COUNT);
   counter = 0;
 
   try
