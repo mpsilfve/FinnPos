@@ -25,10 +25,14 @@
 #ifndef TEST_ParamTable_cc
 
 #include "Word.hh"
+#include <cassert>
 
 ParamTable::ParamTable(void):
   label_extractor(0),
-  trained(0)
+  trained(0),
+  update_threshold(0),
+  avg_mass_threshold(0),
+  filter_type(NO_FILTER)
 {}
 
 ParamTable::~ParamTable(void)
@@ -44,12 +48,31 @@ ParamTable &ParamTable::operator=(const ParamTable &another)
   feature_template_map = another.feature_template_map;
   unstruct_param_table = another.unstruct_param_table;
   struct_param_table   = another.struct_param_table;
+  update_threshold     = another.update_threshold;
+  avg_mass_threshold   = another.avg_mass_threshold;
+  filter_type          = another.filter_type;  
+  train_iters          = another.train_iters;
+  update_count_map     = another.update_count_map;
   return *this;
 }
 
 void ParamTable::set_trained(void)
 {
   trained = 1;
+}
+
+void ParamTable::set_param_filter(const TaggerOptions &options)
+{
+  if (options.filter_type == UPDATE_COUNT)
+    {
+      update_threshold = options.param_threshold;
+      filter_type = UPDATE_COUNT;
+    }
+  else if (options.filter_type == AVG_VALUE)
+    {
+      avg_mass_threshold = options.param_threshold;
+      filter_type = AVG_VALUE;
+    }
 }
 
 unsigned int ParamTable::get_feat_template
@@ -97,6 +120,9 @@ void ParamTable::set_label_extractor(const LabelExtractor &le)
 {   
   this->label_extractor = &le; 
 }
+
+void ParamTable::set_train_iters(int iters)
+{ train_iters = iters; }
 
 long ParamTable::get_struct_param_id(unsigned int label) const
 {
@@ -176,17 +202,21 @@ std::string ParamTable::get_struct_feat_repr(long feat_id) const
     }
 }
 
-float ParamTable::get_filtered_param(int param_id, float param) const
+void ParamTable::set_update_counts(const ParamTable &another)
+{ update_count_map = another.update_count_map; }
+
+float ParamTable::get_filtered_param(long param_id, float param) const
 {
-  if (trained)
-    { return param; }
-  if (not filtering)
+  if (trained or filter_type != UPDATE_COUNT)
     { return param; }
   if (update_count_map.count(param_id) == 0)
+    { 
+      assert(param == 0);
+      return 0; 
+    }
+  if (update_count_map.find(param_id)->second < update_threshold)
     { return 0; }
-  if (update_count_map.find(param_id)->second >= UD_TH)
-    { return param; }
-  return 0;
+  return param;
 }
 
 float ParamTable::get_unstruct(unsigned int feature_template, 
@@ -371,7 +401,7 @@ void ParamTable::update_unstruct(unsigned int feature_template,
   if (unstruct_param_table.count(id) == 0)
     { unstruct_param_table[id] = 0; }
 
-  if (filtering)
+  if (filter_type == UPDATE_COUNT)
     { ++update_count_map[id]; }
 
   unstruct_param_table[get_unstruct_param_id(feature_template, label)] += ud;
@@ -384,7 +414,7 @@ void ParamTable::update_struct1(unsigned int label, float ud, Degree sublabel_or
   if (struct_param_table.count(id) == 0)
     { struct_param_table[id] = 0; }
 
-  if (filtering)
+  if (filter_type == UPDATE_COUNT)
     { ++update_count_map[id]; }
 
   struct_param_table[get_struct_param_id(label)] += ud;
@@ -399,6 +429,9 @@ void ParamTable::update_struct1(unsigned int label, float ud, Degree sublabel_or
   
 	  if (struct_param_table.count(id) == 0)
 	    { struct_param_table[id] = 0; }
+
+	  if (filter_type == UPDATE_COUNT)
+	    { ++update_count_map[id]; }
 
 	  struct_param_table[get_struct_param_id(sub_labels[i])] += ud;
 	}
@@ -415,7 +448,7 @@ void ParamTable::update_struct2(unsigned int plabel,
   if (struct_param_table.count(id) == 0)
     { struct_param_table[id] = 0; }
 
-  if (filtering)
+  if (filter_type == UPDATE_COUNT)
     { ++update_count_map[id]; }
 
   struct_param_table[get_struct_param_id(plabel, label)] += ud;
@@ -433,6 +466,9 @@ void ParamTable::update_struct2(unsigned int plabel,
 	      
 	      if (struct_param_table.count(id) == 0)
 		{ struct_param_table[id] = 0; }
+
+	      if (filter_type == UPDATE_COUNT)
+		{ ++update_count_map[id]; }
 
 	      struct_param_table[get_struct_param_id(psub_labels[i], 
 						     sub_labels[j])] += ud;
@@ -452,7 +488,7 @@ void ParamTable::update_struct3(unsigned int pplabel,
   if (struct_param_table.count(id) == 0)
     { struct_param_table[id] = 0; }
 
-  if (filtering)
+  if (filter_type == UPDATE_COUNT)
     { ++update_count_map[id]; }
 
   struct_param_table[get_struct_param_id(pplabel, plabel, label)] += ud;
@@ -473,6 +509,9 @@ void ParamTable::update_struct3(unsigned int pplabel,
 		  
 		  if (struct_param_table.count(id) == 0)
 		    { struct_param_table[id] = 0; }
+
+		  if (filter_type == UPDATE_COUNT)
+		    { ++update_count_map[id]; }
 
 		  struct_param_table[get_struct_param_id(ppsub_labels[i], 
 							 psub_labels[j],
@@ -551,13 +590,17 @@ void ParamTable::store(std::ostream &out) const
   write_val(out, trained);
   write_map(out, feature_template_map);
 
-  if (filtering)
-    { write_filtered_map(out, unstruct_param_table, update_count_map, UD_TH, 1); }
+  if (filter_type == UPDATE_COUNT)
+    { write_filtered_map(out, unstruct_param_table, update_count_map, update_threshold, 1); }
+  else if (filter_type == AVG_VALUE)
+    { write_avg_filtered_map(out, unstruct_param_table, avg_mass_threshold, train_iters, 1); }
   else
     { write_map(out, unstruct_param_table, 1); }
 
-  if (filtering)
-    { write_filtered_map(out, struct_param_table, update_count_map, UD_TH, 1); }
+  if (filter_type == UPDATE_COUNT)
+    { write_filtered_map(out, struct_param_table, update_count_map, update_threshold, 1); }
+  else if (filter_type == AVG_VALUE)
+    { write_avg_filtered_map(out, struct_param_table, avg_mass_threshold, train_iters, 1); }
   else
     { write_map(out, struct_param_table, 1); }
 }

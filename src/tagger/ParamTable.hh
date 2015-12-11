@@ -34,8 +34,6 @@
 typedef std::vector<unsigned int> FeatureTemplateVector;
 
 const long MAX_LABEL = 50000;
-const int UD_TH = 5;
-const bool filtering = 0;
 
 class Word;
 class LabelExtractor;
@@ -76,17 +74,19 @@ public:
   ParamMap::iterator get_struct_end(void);
 
   void set_trained(void);
-
+  void set_param_filter(const TaggerOptions &options);
   void store(std::ostream &out) const;
   void load(std::istream &in, bool reverse_bytes);
   bool operator==(const ParamTable &another) const;
 
   void set_label_extractor(const LabelExtractor &label_extractor);
+  void set_train_iters(int iters);
 
   void next(void);
 
   void p(void) const;
-  
+  void set_update_counts(const ParamTable &another);
+
 private:
   typedef std::unordered_map<std::string, unsigned int> FeatureTemplateMap;
   typedef std::vector<std::string> InvFeatureTemplateMap;
@@ -99,6 +99,11 @@ private:
   ParamMap unstruct_param_table;
   ParamMap struct_param_table;
 
+  float update_threshold;
+  float avg_mass_threshold;
+  Filtering filter_type;
+  int train_iters;
+
   long get_unstruct_param_id(unsigned int feature_template, unsigned int label) const;
   long get_struct_param_id(unsigned int label) const;
   long get_struct_param_id(unsigned int plabel, unsigned int label) const;
@@ -108,7 +113,7 @@ private:
 				     const InvFeatureTemplateMap & m) const;
   std::string get_struct_feat_repr(long feat_id) const;
 
-  float get_filtered_param(int param_id, float param) const;
+  float get_filtered_param(long param_id, float param) const;
 
   friend std::ostream &operator<<(std::ostream &out, const ParamTable &table);
 };

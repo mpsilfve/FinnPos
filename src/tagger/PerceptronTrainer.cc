@@ -42,8 +42,10 @@ PerceptronTrainer::PerceptronTrainer(unsigned int max_passes,
   //use_unstruct_sub_labels(options.use_unstructured_sublabels), 
   //use_struct_sub_labels(options.use_structured_sublabels)
   sublabel_order(options.sublabel_order),
-  model_order(options.model_order)
+  model_order(options.model_order),
+  options(options)
 {
+  pt.set_param_filter(options);
   pos_params = pt;
   neg_params = pt;
 
@@ -88,6 +90,7 @@ void PerceptronTrainer::train(const Data &train_data,
 
   float best_dev_acc = -1;
   ParamTable best_params;
+  best_params.set_param_filter(options);
   best_params.set_label_extractor(label_extractor);
 
   unsigned int useless_passes = 0;
@@ -142,6 +145,7 @@ void PerceptronTrainer::train(const Data &train_data,
   pt = best_params;
   pt.set_label_extractor(label_extractor);
   pt.set_trained();
+  pt.set_train_iters(iter);
 
   for (TrellisVector::const_iterator it = train_trellises.begin();
        it != train_trellises.end();
@@ -399,6 +403,9 @@ void PerceptronTrainer::set_avg_params(void)
     }
 
   pt.set_label_extractor(label_extractor);
+
+  if (options.filter_type == UPDATE_COUNT)
+    { pt.set_update_counts(pos_params); }
 }
 
 #else // TEST_PerceptronTrainer_cc

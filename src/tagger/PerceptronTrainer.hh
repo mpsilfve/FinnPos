@@ -60,6 +60,7 @@ private:
 
   Degree sublabel_order;
   Degree model_order;
+  const TaggerOptions &options;
 
   void update(const Sentence &gold_s, 
 	      const Sentence &sys_s);
