@@ -36,6 +36,9 @@ enum Regularization
 enum Degree
   { NODEG, ZEROTH, FIRST, SECOND };
 
+enum Filtering
+  { AVG_VALUE, UPDATE_COUNT };
+
 struct TaggerOptions
 {
   Estimator estimator;
@@ -58,6 +61,8 @@ struct TaggerOptions
   Degree sublabel_order;
   Degree model_order;
   int guesses;
+  float update_threshold;
+  Filtering filtering;
 
   TaggerOptions(void);
 
@@ -80,7 +85,9 @@ struct TaggerOptions
 		bool use_structured_sublabels = 1,
 		Degree sublabel_order = FIRST,
 		Degree model_order = SECOND,
-		int guesses = -1);
+		int guesses = -1,
+		float update_threshold = -1,
+		Filtering filtering = AVG_VALUE);
   
   TaggerOptions(std::istream &in, unsigned int &counter);
 
