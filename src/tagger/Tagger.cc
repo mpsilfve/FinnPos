@@ -84,6 +84,9 @@ Tagger::Tagger(std::istream &tagger_opt_in, std::ostream &msg_out):
   line_counter = 0;
 }
 
+void Tagger::set_param_filter(const TaggerOptions &options)
+{ param_table.set_param_filter(options); }
+
 void Tagger::set_options(const TaggerOptions &tagger_options)
 { this->tagger_options = tagger_options; }
 
