@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from sys import stdin
+from sys import stdin, stdout
 
 def part_count(lemma):
     return lemma.count('#')
@@ -24,6 +24,7 @@ for line in stdin:
 
     if line == '':
         print('')
+        stdout.flush()
     else:
         wf, feats, lemma, label, ann = line.split('\t')
 

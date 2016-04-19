@@ -1,4 +1,4 @@
-from sys import stdin, argv, stderr
+from sys import stdin, argv, stderr, stdout
 from re import findall
 
 def get_lemma(string, convert_type):
@@ -80,6 +80,7 @@ def convert(pname, ifile, convert_type):
             wf, analyses = '', []
             
         elif line == '':
+            stdout.flush()
             continue
 
         elif (convert_type == 'ftb' and 
