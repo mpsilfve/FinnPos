@@ -281,6 +281,34 @@ void Tagger::label_stream(std::istream &in)
     }
 }
 
+void Tagger::lemmatize_stream(std::istream &in)
+{
+  unsigned int line = 0;
+
+  while (in)
+    {
+      Sentence s = get_lemmatizer_input(in, label_extractor, param_table, line);
+
+      if (s.size() == 0)
+	{ continue; }
+
+      s.predict_lemma(lemma_extractor, label_extractor);
+
+      for (unsigned int j = 0; j < s.size(); ++j)
+	{
+	  if (s.at(j).get_word_form() == "_#_")
+	    { continue; }
+
+	  std::cout << s.at(j).get_word_form() 
+		    << "\t_\t" << s.at(j).get_lemma() 
+		    << "\t" << label_extractor.
+	    get_label_string(s.at(j).get_label()) 
+		    << "\t" << s.at(j).get_annotations() << std::endl;
+	}
+      std::cout << std::endl;
+    }
+}
+
 StringVector Tagger::labels_to_strings(const LabelVector &v)
 {
   StringVector res;

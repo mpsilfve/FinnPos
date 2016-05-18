@@ -100,6 +100,44 @@ Sentence::Sentence(std::istream &ifile,
     }
 }
 
+Sentence get_lemmatizer_input(std::istream &ifile,
+			      LabelExtractor &label_extractor, 
+			      ParamTable &pt, 
+			      unsigned int &line_counter)
+{
+  WordVector words;
+
+  while (ifile.peek() != EOF)
+    {
+      ++line_counter;
+
+      try
+	{
+	  Entry entry = get_next_line(ifile);
+
+	  if (entry.token.empty() or entry.feat_templates.empty())
+	    { 
+	      throw SyntaxError(); 
+	    }
+
+	  words.push_back(Word(entry.token,
+				  pt.get_feat_templates(entry.feat_templates),
+				  label_extractor.get_labels(entry.labels),
+				  entry.annotations));
+	  words.back().set_analyzer_lemmas(label_extractor);
+
+	  unsigned int label = label_extractor.get_label(entry.labels[0]);
+	  
+	  words.back().set_label(label);	     
+	}
+      catch (EmptyLine &e)
+	{ 
+	  break; 
+	}
+    }
+  return Sentence(words, label_extractor, 2);
+}
+
 const Word &Sentence::at(unsigned int i) const
 { 
   return sentence.at(i); 

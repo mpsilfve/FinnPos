@@ -71,4 +71,9 @@ class Sentence
   WordVector sentence;
 };
 
+Sentence get_lemmatizer_input(std::istream &ifile,
+			      LabelExtractor &label_extractor, 
+			      ParamTable &pt, 
+			      unsigned int &line_counter);
+
 #endif // HEADER_Sentence_hh
