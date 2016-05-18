@@ -182,8 +182,8 @@ std::string ParamTable::get_struct_feat_repr(long feat_id) const
       feat_id -= label1;
       long label2 = feat_id / (MAX_LABEL + 1);
       
-      return label_extractor->get_label_string(label1) + " " +
-	label_extractor->get_label_string(label2);
+      return label_extractor->get_label_string(label2) + " " +
+	label_extractor->get_label_string(label1);
     }
   else
     {
@@ -196,9 +196,9 @@ std::string ParamTable::get_struct_feat_repr(long feat_id) const
       
       long label3 = feat_id / (MAX_LABEL + 1);
 
-      return label_extractor->get_label_string(label1) + " " +
+      return label_extractor->get_label_string(label3) + " " +
 	label_extractor->get_label_string(label2) + " " + 
-	label_extractor->get_label_string(label3);
+	label_extractor->get_label_string(label1);
     }
 }
 
