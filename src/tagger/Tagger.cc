@@ -124,9 +124,9 @@ void Tagger::train(std::istream &train_in,
 				 tagger_options.guess_mass,
 				 tagger_options.guesses);
       
-      msg_out << "Estimating lemmatizer parameters." << std::endl;
     }
-  
+
+  msg_out << "Estimating lemmatizer parameters." << std::endl;
   lemma_extractor.set_max_passes(tagger_options.max_lemmatizer_passes);
   lemma_extractor.train(train_data, dev_data, label_extractor, msg_out,
 			tagger_options);
