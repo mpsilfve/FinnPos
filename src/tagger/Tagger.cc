@@ -104,24 +104,29 @@ void Tagger::train(std::istream &train_in,
   msg_out << "Training label guesser." << std::endl;
   label_extractor.train(train_data);
   param_table.set_label_extractor(label_extractor);
-
+  
   msg_out << "Reading development data." << std::endl;
   Data dev_data(dev_in, 1, label_extractor, param_table, tagger_options.degree);
   dev_data.clear_label_guesses(); 
 
-  msg_out << "Setting label guesses." << std::endl;
-  train_data.set_label_guesses(label_extractor, 0, 
-			       tagger_options.guess_mass, 
-			       tagger_options.guesses);
-  std::cerr << "Average number of label candidates: "
-    << LabelExtractor::all_time_guess_count * 1.0 / 
-    LabelExtractor::all_time_word_count << std::endl;
+  if (tagger_options.max_train_passes != 0)
+    {
 
-  dev_data.set_label_guesses(label_extractor, 0, 
-			     tagger_options.guess_mass,
-			     tagger_options.guesses);
-
-  msg_out << "Estimating lemmatizer parameters." << std::endl;
+      msg_out << "Setting label guesses." << std::endl;
+      train_data.set_label_guesses(label_extractor, 0, 
+				   tagger_options.guess_mass, 
+				   tagger_options.guesses);
+      std::cerr << "Average number of label candidates: "
+		<< LabelExtractor::all_time_guess_count * 1.0 / 
+	LabelExtractor::all_time_word_count << std::endl;
+      
+      dev_data.set_label_guesses(label_extractor, 0, 
+				 tagger_options.guess_mass,
+				 tagger_options.guesses);
+      
+      msg_out << "Estimating lemmatizer parameters." << std::endl;
+    }
+  
   lemma_extractor.set_max_passes(tagger_options.max_lemmatizer_passes);
   lemma_extractor.train(train_data, dev_data, label_extractor, msg_out,
 			tagger_options);
