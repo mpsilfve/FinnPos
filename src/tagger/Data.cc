@@ -102,6 +102,9 @@ Sentence &Data::at(unsigned int i)
 unsigned int Data::size(void) const
 { return data.size(); }
 
+void Data::push_back(const Sentence &s)
+{ data.push_back(s); }
+
 void Data::set_label_guesses(const LabelExtractor &g, 
 			     bool use_label_dict,
 			     float mass,

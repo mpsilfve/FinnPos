@@ -90,6 +90,8 @@ class Data
   const Sentence &at(unsigned int i) const;
   Sentence &at(unsigned int i);
 
+  void push_back(const Sentence &s);
+
   unsigned int size(void) const;
   void clear_label_guesses(void);
   void set_label_guesses(const LabelExtractor &g, 
