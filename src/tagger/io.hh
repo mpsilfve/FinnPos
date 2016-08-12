@@ -26,6 +26,7 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 //#include <unordered_map>
 #include "UnorderedMapSet.hh"
 #include <sstream>
