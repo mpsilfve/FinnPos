@@ -1,5 +1,5 @@
 /* LabelExtractorWrapper.i */
-%module finnpos_label_guesser
+%module finnpos
 
 %include "std_vector.i"
 %include "std_string.i"
