@@ -40,7 +40,8 @@ class LabelExtractor
   static int all_time_word_count;
   static int all_time_guess_count;
 
-  LabelExtractor(unsigned int max_suffix_len=10);
+  LabelExtractor(unsigned int max_suffix_len=10,
+		 unsigned int min_guess_count = 20);
   LabelExtractor(const TaggerOptions &tagger_options);
   virtual ~LabelExtractor(void);
 

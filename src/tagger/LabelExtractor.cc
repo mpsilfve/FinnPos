@@ -36,7 +36,8 @@ std::string get_suffix(const std::string &wf, unsigned int length);
 int LabelExtractor::all_time_word_count = 0;
 int LabelExtractor::all_time_guess_count = 0;
 
-LabelExtractor::LabelExtractor(unsigned int max_suffix_len):
+LabelExtractor::LabelExtractor(unsigned int max_suffix_len,
+			       unsigned int min_guess_count):
   max_suffix_len(max_suffix_len),
   max_guesses(50)
 {
@@ -44,7 +45,7 @@ LabelExtractor::LabelExtractor(unsigned int max_suffix_len):
 
   for (unsigned int i = 0; i < max_suffix_len + 1; ++i)
     { 
-      label_counts.push_back(i); 
+      label_counts.push_back(SuffixLabelMap(i, min_guess_count)); 
     }
 }
 
@@ -162,7 +163,7 @@ void LabelExtractor::train(Data &data)
 	  const Word &w = data.at(i).at(j);
 
 	  std::string wf = w.get_word_form();
-	  
+
 	  words[i % 10][wf] = 1;
 
 	  if (wf == BOUNDARY_WF)
