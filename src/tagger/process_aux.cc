@@ -19,7 +19,7 @@ namespace finnposaux
     if (s.size() < 2)
       { throw InvalidField(); }
 
-    if (s[0] != '[' or s.back() != ']')
+    if (s[0] != '[' or s[s.size() - 1] != ']')
       { throw InvalidField(); }
 
     std::string ss = s.substr(1).substr(0, s.size() - 2);
@@ -45,7 +45,7 @@ namespace finnposaux
     if (s.size() < 2)
       { throw InvalidField(); }
 
-    if (s[0] != '(' or s.back() != ')')
+    if (s[0] != '(' or s[s.size() - 1] != ')')
       { throw InvalidField(); }
 
     size_t sep_pos = s.find("\', \'");
@@ -70,7 +70,7 @@ namespace finnposaux
     if (s.size() < 2)
       { throw InvalidField(); }
 
-    if (s[0] != '\'' or s.back() != '\'')
+    if (s[0] != '\'' or s[s.size() - 1] != '\'')
       { throw InvalidField(); }
 
     if (s.find(' ') != std::string::npos)
