@@ -7,11 +7,14 @@
 
 #include <algorithm>
 #include <utility>
+#include <cmath>
 
 #include "Data.hh"
 
-SuffixLabelMap::SuffixLabelMap(unsigned int max_word_length):
+SuffixLabelMap::SuffixLabelMap(unsigned int max_word_length,
+			       unsigned int min_guess_count):
   max_word_length(max_word_length),
+  min_guess_count(min_guess_count),
   std_dev_tag_prob(-1.0)
 {}
 
@@ -33,7 +36,7 @@ void SuffixLabelMap::train(const Word &w)
 {
   std::string word_form = w.get_word_form();
   unsigned int label    = w.get_label();
-  
+
   if (word_form.size() <= max_word_length)
     { 
       if (word_form == BOUNDARY_WF)
@@ -206,12 +209,12 @@ void SuffixLabelMap::set_guesses(const std::string &word_form,
 
       if (candidate_count != -1)
 	{
-	  if (static_cast<int>(i) >= candidate_count)
+	  if (static_cast<int>(i) + 1 >= candidate_count)
 	    { break; }
 	}
       else
 	{
-	  if (tentative_mass > mass and i > 20)
+	  if (tentative_mass > mass and i > min_guess_count)
 	    { break; }      
 	}
     }

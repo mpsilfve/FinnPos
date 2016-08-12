@@ -17,7 +17,7 @@ typedef std::vector<unsigned int> LabelVector;
 class SuffixLabelMap
 {
 public:
-  SuffixLabelMap(unsigned int max_word_length=10);
+  SuffixLabelMap(unsigned int max_word_length=10, unsigned int min_guess_count = 20);
 
   void train(const Data &data);
   void train(const Sentence &ds);
@@ -40,10 +40,12 @@ private:
   typedef std::unordered_map<unsigned int, float> LabelCountMap;
 
   unsigned int max_word_length;
+  unsigned int min_guess_count;
   float std_dev_tag_prob;
   StringCountMap suffix_label_probs;
   LabelCountMap label_probs;
-  
+
+
   void count(const std::string &word_form, unsigned int label);
   void count(unsigned int label);
 };
