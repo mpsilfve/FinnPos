@@ -145,6 +145,18 @@ void Tagger::train(std::istream &train_in,
       trainer.train(train_data, dev_data, tagger_options.beam, 		    
 		    tagger_options.beam_mass);
     }
+  else if (tagger_options.estimator == ML)
+    {
+      SGDTrainer trainer(tagger_options.max_train_passes, 
+			 tagger_options.max_useless_passes, 
+			 param_table, 
+			 label_extractor, 
+			 lemma_extractor,
+			 msg_out,
+			 tagger_options);
+      trainer.train(train_data, dev_data, tagger_options.beam, 		    
+		    tagger_options.beam_mass);
+    }
   else
     { throw NotImplemented(); }
 
@@ -267,22 +279,59 @@ void Tagger::label_stream(std::istream &in)
 		      tagger_options.model_order,
 		      tagger_options.beam);
       trellis.set_beam_mass(tagger_options.beam_mass);
-      trellis.set_maximum_a_posteriori_assignment(param_table);      
-  
-      s.predict_lemma(lemma_extractor, label_extractor);
-
-      for (unsigned int j = 0; j < s.size(); ++j)
+      
+      if (tagger_options.inference == MAP)
 	{
-	  if (s.at(j).get_word_form() == "_#_")
-	    { continue; }
+	  trellis.set_maximum_a_posteriori_assignment(param_table);      
+  
+	  s.predict_lemma(lemma_extractor, label_extractor);
 
-	  std::cout << s.at(j).get_word_form() 
-		    << "\t_\t" << s.at(j).get_lemma() 
-		    << "\t" << label_extractor.
-	    get_label_string(s.at(j).get_label()) 
-		    << "\t" << s.at(j).get_annotations() << std::endl;
+	  for (unsigned int j = 0; j < s.size(); ++j)
+	    {
+	      if (s.at(j).get_word_form() == "_#_")
+		{ continue; }
+
+	      std::cout << s.at(j).get_word_form() 
+			<< "\t_\t" << s.at(j).get_lemma() 
+			<< "\t" << label_extractor.
+		get_label_string(s.at(j).get_label()) 
+			<< "\t" << s.at(j).get_annotations() << std::endl;
+	    }
+	  std::cout << std::endl;
 	}
-      std::cout << std::endl;
+      else if (tagger_options.inference == MARGINAL)
+	{
+	  trellis.set_marginals(param_table);      
+	  //s.predict_lemma(lemma_extractor, label_extractor);
+
+	  for (unsigned int j = 0; j < s.size(); ++j)
+	    {
+	      if (s.at(j).get_word_form() == "_#_")
+		{ continue; }
+
+	      std::vector<std::pair<float, std::string> > candidates;
+
+	      for (unsigned int k = 0; k < s.at(j).get_label_count(); ++k)
+		{
+		  float marginal = trellis.get_marginal(j,k);
+		  std::string label = label_extractor.get_label_string(s.at(j).get_label(k));		  
+		  candidates.push_back(std::pair<float,std::string>(marginal,label));
+		}
+	      std::sort(candidates.begin(), candidates.end());
+	      std::reverse(candidates.begin(), candidates.end());
+
+	      std::cout << s.at(j).get_word_form();
+	      for (unsigned int k = 0; k < candidates.size(); ++k)
+		{
+		  std::cout << '\t' << candidates[k].second << ' ' << candidates[k].first << std::endl; 
+		}
+	    }
+	  std::cout << std::endl;
+	}
+      else
+	{
+	  throw NotImplemented();
+	}
     }
 }
 

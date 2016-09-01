@@ -68,6 +68,11 @@ public:
   void update_struct2(unsigned int plabel, unsigned int label, float ud, Degree sublabel_order);
   void update_struct3(unsigned int pplabel, unsigned int plabel, unsigned int label, float ud, Degree sublabel_order);
 
+  void regularize_all_unstruct(const Word &word, unsigned int label, float sigma, Degree sublabel_order);
+  void regularize_struct1(unsigned int label, float sigma, Degree sublabel_order);
+  void regularize_struct2(unsigned int plabel, unsigned int label, float sigma, Degree sublabel_order);
+  void regularize_struct3(unsigned int pplabel, unsigned int plabel, unsigned int label, float sigma, Degree sublabel_order);
+
   ParamMap::iterator get_unstruct_begin(void);
   ParamMap::iterator get_struct_begin(void);
   ParamMap::iterator get_unstruct_end(void);

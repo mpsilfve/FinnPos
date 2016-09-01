@@ -23,8 +23,37 @@
 #define HEADER_SGDTrainer_hh
 
 #include "Trainer.hh"
+#include "Trellis.hh"
 
 class SGDTrainer : public Trainer
-{};
+{
+public:
+  SGDTrainer(unsigned int max_passes,
+	     unsigned int max_useless_passes,
+	     ParamTable &pt,
+	     const LabelExtractor &label_e,
+	     const LemmaExtractor &le,
+	     std::ostream &msg_out,
+	     const TaggerOptions &options);
+  
+  void train(const Data &train_data, const Data &dev_data, 
+	     unsigned int beam = -1,
+	     float beam_mass = -1);
+
+private:
+  ParamTable pos_params;
+  unsigned int iter;
+  Degree sublabel_order;
+  Degree model_order;
+  const TaggerOptions &options;
+  float delta;
+  float sigma;
+  Word bw;
+
+  void update(const Sentence &gold_s, 
+	      const Sentence &sys_s,
+	      const Trellis &trellis);
+
+};
 
 #endif // HEADER_SGDTrainer_hh

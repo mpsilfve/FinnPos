@@ -241,11 +241,14 @@ void Trellis::set_marginals(const ParamTable &pt)
   set_unigram_marginals();
   set_trigram_marginals(pt);
 
+  if (trellis.size() > 0)
+    { normalize(unigram_marginals[0]); }
+
   for (unsigned int i = 1; i < trellis.size(); ++i)
     {
+      normalize(unigram_marginals[i]);
       normalize(trigram_marginals[i]);
       normalize(bigram_marginals[i]);
-      normalize(unigram_marginals[i]);
     }
 }
 

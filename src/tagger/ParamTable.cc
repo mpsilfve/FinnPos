@@ -397,7 +397,6 @@ void ParamTable::update_unstruct(unsigned int feature_template,
 				 float ud)
 {
   size_t id = get_unstruct_param_id(feature_template, label);
-  
   if (unstruct_param_table.count(id) == 0)
     { unstruct_param_table[id] = 0; }
 
@@ -438,6 +437,39 @@ void ParamTable::update_struct1(unsigned int label, float ud, Degree sublabel_or
     }
 }
 
+void ParamTable::regularize_struct1(unsigned int label, float sigma, Degree sublabel_order)
+{
+  size_t id = get_struct_param_id(label);
+  
+  if (struct_param_table.count(id) == 0)
+    { struct_param_table[id] = 0; }
+
+  if (filter_type == UPDATE_COUNT)
+    { ++update_count_map[id]; }
+
+  float ud = -1 * struct_param_table[id] * sigma;
+  struct_param_table[id] += ud;
+
+  if (label_extractor != 0 and sublabel_order > NODEG)
+    {
+      const LabelVector &sub_labels = label_extractor->sub_labels(label);
+
+      for (unsigned int i = 0; i < sub_labels.size(); ++i)
+	{
+	  size_t id = get_struct_param_id(sub_labels[i]);
+  
+	  if (struct_param_table.count(id) == 0)
+	    { struct_param_table[id] = 0; }
+
+	  if (filter_type == UPDATE_COUNT)
+	    { ++update_count_map[id]; }
+
+	  float ud = -1 * struct_param_table[id] * sigma;
+	  struct_param_table[id] += ud;
+	}
+    }
+}
+
 void ParamTable::update_struct2(unsigned int plabel, 
 				unsigned int label, 
 				float ud,
@@ -472,6 +504,46 @@ void ParamTable::update_struct2(unsigned int plabel,
 
 	      struct_param_table[get_struct_param_id(psub_labels[i], 
 						     sub_labels[j])] += ud;
+	    }
+	}
+    }
+}
+
+void ParamTable::regularize_struct2(unsigned int plabel, 
+				    unsigned int label, 
+				    float sigma,
+				    Degree sublabel_order)
+{
+  size_t id = get_struct_param_id(plabel, label);
+  
+  if (struct_param_table.count(id) == 0)
+    { struct_param_table[id] = 0; }
+
+  if (filter_type == UPDATE_COUNT)
+    { ++update_count_map[id]; }
+
+  float ud = -1 * struct_param_table[id] * sigma;
+  struct_param_table[id] += ud;
+
+  if (label_extractor != 0 and sublabel_order > ZEROTH)
+    {
+      const LabelVector &sub_labels = label_extractor->sub_labels(label);
+      const LabelVector &psub_labels = label_extractor->sub_labels(plabel);
+
+      for (unsigned int i = 0; i < psub_labels.size(); ++i)
+	{
+	  for (unsigned int j = 0; j < sub_labels.size(); ++j)
+	    {
+	      size_t id = get_struct_param_id(psub_labels[i], sub_labels[j]);
+	      
+	      if (struct_param_table.count(id) == 0)
+		{ struct_param_table[id] = 0; }
+
+	      if (filter_type == UPDATE_COUNT)
+		{ ++update_count_map[id]; }
+	      
+	      float ud = -1 * struct_param_table[id] * sigma;
+	      struct_param_table[id] += ud;
 	    }
 	}
     }
@@ -522,6 +594,51 @@ void ParamTable::update_struct3(unsigned int pplabel,
     }
 }
 
+void ParamTable::regularize_struct3(unsigned int pplabel, 
+				    unsigned int plabel, 
+				    unsigned int label, 
+				    float sigma,
+				    Degree sublabel_order)
+{
+  size_t id = get_struct_param_id(pplabel, plabel, label);
+  
+  if (struct_param_table.count(id) == 0)
+    { struct_param_table[id] = 0; }
+
+  if (filter_type == UPDATE_COUNT)
+    { ++update_count_map[id]; }
+
+  float ud = -1 * sigma * struct_param_table[id];
+  struct_param_table[id] += ud;
+
+  if (label_extractor != 0 and sublabel_order > FIRST)
+    {
+      const LabelVector &sub_labels = label_extractor->sub_labels(label);
+      const LabelVector &psub_labels = label_extractor->sub_labels(plabel);
+      const LabelVector &ppsub_labels = label_extractor->sub_labels(pplabel);
+
+      for (unsigned int i = 0; i < ppsub_labels.size(); ++i)
+	{
+	  for (unsigned int j = 0; j < psub_labels.size(); ++j)
+	    {
+	      for (unsigned int k = 0; k < sub_labels.size(); ++k)
+		{
+		  size_t id = get_struct_param_id(ppsub_labels[i], psub_labels[j], sub_labels[k]);
+		  
+		  if (struct_param_table.count(id) == 0)
+		    { struct_param_table[id] = 0; }
+
+		  if (filter_type == UPDATE_COUNT)
+		    { ++update_count_map[id]; }
+
+		  float ud = -1* sigma* struct_param_table[id];
+		  struct_param_table[id] += ud;
+		}
+	    }
+	}
+    }
+}
+
 void ParamTable::update_all_struct_fw(unsigned int pplabel, unsigned int plabel, unsigned int label, float update, Degree sublabel_order,
 				      Degree model_order)
 {
@@ -558,6 +675,29 @@ void ParamTable::update_all_unstruct(const Word &word, unsigned int label, float
 	  for (unsigned int j = 0; j < sub_labels.size(); ++j)
 	    {
 	      update_unstruct(word.get_feature_template(i), sub_labels[j], update);
+	    }
+	}
+    }
+}
+
+void ParamTable::regularize_all_unstruct(const Word &word, unsigned int label, float sigma, Degree sub_label_order)
+{
+  for (unsigned int i = 0; i < word.get_feature_template_count(); ++i)
+    {
+      float ud = -1 * get_unstruct(word.get_feature_template(i), label) * sigma;
+      update_unstruct(word.get_feature_template(i), label, ud);
+    }
+
+  if (label_extractor != 0 and sub_label_order > NODEG)
+    {
+      const LabelVector &sub_labels = label_extractor->sub_labels(label);
+      
+      for (unsigned int i = 0; i < word.get_feature_template_count(); ++i)
+	{
+	  for (unsigned int j = 0; j < sub_labels.size(); ++j)
+	    {
+	      float ud = -1 * get_unstruct(word.get_feature_template(i), sub_labels[j]) * sigma;
+	      update_unstruct(word.get_feature_template(i), sub_labels[j], ud);
 	    }
 	}
     }
@@ -640,7 +780,6 @@ std::ostream &operator<<(std::ostream &out, const ParamTable &table)
     { m[it->second] = it->first; }
 
   out << "UNSTRUCTURED FEATURES" << std::endl;
-
   for (ParamMap::const_iterator it = 
 	 table.unstruct_param_table.begin();
        it != table.unstruct_param_table.end();
