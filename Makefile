@@ -111,7 +111,7 @@ install:finnpos
 
 	install -m 755 bin/* $(INSTALL_DIR)/bin
 
-install-models:ftb-omorfi-tagger tdt-omorfi-tagger
+install-models:ftb-omorfi-tagger
 	install -m 755 share/finnpos/omorfi/* $(INSTALL_DIR)/share/finnpos/omorfi
 	install -m 755 share/finnpos/ftb_omorfi_model/* $(INSTALL_DIR)/share/finnpos/ftb_omorfi_model
 	install -m 755 share/finnpos/tdt_omorfi_model/* $(INSTALL_DIR)/share/finnpos/tdt_omorfi_model
