@@ -114,7 +114,6 @@ install:finnpos
 install-models:ftb-omorfi-tagger
 	install -m 755 share/finnpos/omorfi/* $(INSTALL_DIR)/share/finnpos/omorfi
 	install -m 755 share/finnpos/ftb_omorfi_model/* $(INSTALL_DIR)/share/finnpos/ftb_omorfi_model
-	install -m 755 share/finnpos/tdt_omorfi_model/* $(INSTALL_DIR)/share/finnpos/tdt_omorfi_model
 
 uninstall:
 	rm -f $(INSTALL_DIR)/bin/finnpos-train $(INSTALL_DIR)/bin/finnpos-label
