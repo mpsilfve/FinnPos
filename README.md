@@ -31,3 +31,9 @@ Help for building, installing and using FinnPos may be found in the
 FinnPos wiki
 
   https://github.com/mpsilfve/FinnPos/wiki
+  
+The toolkit was developed by Miikka Silfverberg, Teemu Ruokolainen, and Krister Linden.
+
+References:
+
+Miikka Silfverberg, Teemu Ruokolainen, Krister Linden. Mikko Kurimo, FinnPos: An Open-Source Morphological Tagging and Lemmatization Toolkit for Finnish. In Language Resources and Evaluation. 
