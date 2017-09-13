@@ -32,7 +32,7 @@ FinnPos wiki
 
   https://github.com/mpsilfve/FinnPos/wiki
   
-The toolkit was developed by Miikka Silfverberg, Teemu Ruokolainen, and Krister Linden.
+The toolkit was developed by Miikka Silfverberg and Teemu Ruokolainen.
 
 References:
 
