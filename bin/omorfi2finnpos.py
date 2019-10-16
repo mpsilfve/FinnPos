@@ -72,8 +72,10 @@ def convert(pname, ifile, convert_type):
 
             label_str = '_' 
 
+            # Make sure that finnpos disambiguates if we got some
+            # analyses from OMorFi.
             if labels != []:
-                ' '.join(labels)
+                label_str = ' '.join(labels)
                 
             print('%s\t%s\t%s\t%s\t%s' % (wf, feats, '_', label_str, lemma_str))
 
